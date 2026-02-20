@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Himanshu AI — Multi-Model Interface</title>
+    <meta name="description"
+        content="A premium AI chat interface powered by Himanshu AI, supporting multiple LLM providers.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"
+                                stroke-linejoin="round" />
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2"
+                                stroke-linejoin="round" />
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <span class="logo-text">Himanshu AI</span>
+                </div>
+                <button class="btn-icon" id="newChatBtn" title="New Chat">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Provider Selector -->
+            <div class="provider-selector">
+                <button class="provider-btn active" data-provider="gemini" id="providerGemini">
+                    <span class="provider-dot gemini"></span>
+                    <span>Gemini</span>
+                </button>
+                <button class="provider-btn" data-provider="claude" id="providerClaude">
+                    <span class="provider-dot claude"></span>
+                    <span>Claude</span>
+                </button>
+            </div>
+
+            <!-- Model Selector -->
+            <div class="model-selector">
+                <label class="selector-label">Model</label>
+                <div class="custom-select" id="modelSelect">
+                    <div class="select-trigger" id="selectTrigger">
+                        <span class="select-value" id="selectValue">gemini-3-flash-preview</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </div>
+                    <div class="select-options" id="selectOptions"></div>
+                </div>
+            </div>
+
+            <!-- Chat History -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <span>Conversations</span>
+                    <button class="btn-icon btn-sm" id="clearAllBtn" title="Clear All">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="chat-list" id="chatList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Settings Button -->
+            <div class="sidebar-footer">
+                <button class="settings-btn" id="settingsBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path
+                            d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                    </svg>
+                    <span>Settings</span>
+                </button>
+                <div class="credit">Created by Himanshu Yadav</div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-main">
+            <!-- Top Bar -->
+            <header class="chat-header">
+                <button class="btn-icon sidebar-toggle" id="sidebarToggle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18" />
+                    </svg>
+                </button>
+                <div class="header-info">
+                    <h1 class="header-title" id="headerTitle">New Chat</h1>
+                    <span class="header-model" id="headerModel">gemini-3-flash-preview</span>
+                </div>
+                <div class="header-actions">
+                    <div class="token-counter" id="tokenCounter" title="Estimated tokens">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 6v6l4 2" />
+                        </svg>
+                        <span id="tokenCount">0 tokens</span>
+                    </div>
+                    <button class="btn-icon" id="exportBtn" title="Export Chat">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Messages -->
+            <div class="messages-container" id="messagesContainer">
+                <div class="messages-inner" id="messagesInner">
+                    <!-- Welcome Screen -->
+                    <div class="welcome-screen" id="welcomeScreen">
+                        <div class="welcome-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#grad1)" stroke-width="1.5"
+                                    stroke-linejoin="round" />
+                                <path d="M2 17L12 22L22 17" stroke="url(#grad2)" stroke-width="1.5"
+                                    stroke-linejoin="round" />
+                                <path d="M2 12L12 17L22 12" stroke="url(#grad3)" stroke-width="1.5"
+                                    stroke-linejoin="round" />
+                                <defs>
+                                    <linearGradient id="grad1" x1="2" y1="2" x2="22" y2="12">
+                                        <stop stop-color="#a78bfa" />
+                                        <stop offset="1" stop-color="#6366f1" />
+                                    </linearGradient>
+                                    <linearGradient id="grad2" x1="2" y1="17" x2="22" y2="22">
+                                        <stop stop-color="#6366f1" />
+                                        <stop offset="1" stop-color="#8b5cf6" />
+                                    </linearGradient>
+                                    <linearGradient id="grad3" x1="2" y1="12" x2="22" y2="17">
+                                        <stop stop-color="#818cf8" />
+                                        <stop offset="1" stop-color="#a78bfa" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <h2>Welcome to Himanshu AI</h2>
+                        <p>Your multi-model AI assistant powered by Gemini & Claude</p>
+                        <div class="quick-prompts">
+                            <button class="quick-prompt" data-prompt="Explain quantum computing in simple terms">
+                                <span class="qp-icon">🔬</span>
+                                <span>Explain quantum computing</span>
+                            </button>
+                            <button class="quick-prompt"
+                                data-prompt="Write a Python function to sort a list using merge sort with detailed comments">
+                                <span class="qp-icon">💻</span>
+                                <span>Write a merge sort in Python</span>
+                            </button>
+                            <button class="quick-prompt" data-prompt="Compare REST vs GraphQL APIs with pros and cons">
+                                <span class="qp-icon">⚡</span>
+                                <span>REST vs GraphQL comparison</span>
+                            </button>
+                            <button class="quick-prompt"
+                                data-prompt="Create a creative short story about an AI becoming self-aware">
+                                <span class="qp-icon">✍️</span>
+                                <span>Creative AI short story</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <textarea id="messageInput" placeholder="Type your message..." rows="1" autofocus></textarea>
+                        <div class="input-actions">
+                            <span class="char-count" id="charCount">0</span>
+                            <button class="send-btn" id="sendBtn" disabled title="Send message (Enter)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                                </svg>
+                            </button>
+                            <button class="stop-btn hidden" id="stopBtn" title="Stop generating">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="6" width="12" height="12" rx="2" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-hint">
+                        <span>Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</span>
+                        <div class="param-controls">
+                            <label class="param" title="Temperature">
+                                <span>Temp</span>
+                                <input type="range" id="tempSlider" min="0" max="100" value="70" class="mini-slider">
+                                <span id="tempValue">0.7</span>
+                            </label>
+                            <label class="param" title="Max Tokens">
+                                <span>Max</span>
+                                <input type="number" id="maxTokens" value="4096" min="1" max="32768" class="mini-input">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay hidden" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="btn-icon" id="closeSettingsBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-group">
+                    <h3>API Configuration</h3>
+                    <div class="setting-item">
+                        <label>Base URL</label>
+                        <input type="url" id="settingBaseUrl" class="setting-input"
+                            placeholder="https://api.example.com">
+                    </div>
+                    <div class="setting-item">
+                        <label>Auth Token</label>
+                        <div class="token-input-wrap">
+                            <input type="password" id="settingAuthToken" class="setting-input" placeholder="sk-...">
+                            <button class="btn-icon btn-sm" id="toggleTokenVisibility">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h3>System Prompt</h3>
+                    <div class="setting-item">
+                        <textarea id="settingSystemPrompt" class="setting-textarea" rows="4"
+                            placeholder="You are a helpful AI assistant..."></textarea>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h3>Appearance</h3>
+                    <div class="setting-item toggle-item">
+                        <label>Stream responses</label>
+                        <label class="toggle">
+                            <input type="checkbox" id="settingStream" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item toggle-item">
+                        <label>Show token counter</label>
+                        <label class="toggle">
+                            <input type="checkbox" id="settingTokens" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="resetSettingsBtn">Reset</button>
+                <button class="btn btn-primary" id="saveSettingsBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
