@@ -57,7 +57,9 @@ const $$ = (s) => document.querySelectorAll(s);
 
 const els = {
     sidebar: $('#sidebar'),
+    sidebarOverlay: $('#sidebarOverlay'),
     sidebarToggle: $('#sidebarToggle'),
+    closeSidebarBtn: $('#closeSidebarBtn'),
     newChatBtn: $('#newChatBtn'),
     providerGemini: $('#providerGemini'),
     providerClaude: $('#providerClaude'),
@@ -71,8 +73,6 @@ const els = {
     messagesContainer: $('#messagesContainer'),
     messagesInner: $('#messagesInner'),
     welcomeScreen: $('#welcomeScreen'),
-    headerTitle: $('#headerTitle'),
-    headerModel: $('#headerModel'),
     tokenCount: $('#tokenCount'),
     tokenCounter: $('#tokenCounter'),
     exportBtn: $('#exportBtn'),
@@ -142,8 +142,29 @@ function setupMarked() {
 function setupEventListeners() {
     // Sidebar toggle
     els.sidebarToggle.addEventListener('click', () => {
+        const isOpening = els.sidebar.classList.contains('closed') || !els.sidebar.classList.contains('open');
+
         els.sidebar.classList.toggle('open');
+        els.sidebar.classList.toggle('closed');
+
+        if (window.innerWidth <= 768) {
+            els.sidebarOverlay.classList.toggle('show');
+        }
     });
+
+    els.sidebarOverlay.addEventListener('click', () => {
+        els.sidebar.classList.remove('open');
+        els.sidebarOverlay.classList.remove('show');
+        els.sidebar.classList.add('closed'); // Ensure it closes on desktop too if toggled
+    });
+
+    if (els.closeSidebarBtn) {
+        els.closeSidebarBtn.addEventListener('click', () => {
+            els.sidebar.classList.remove('open');
+            els.sidebarOverlay.classList.remove('show');
+            els.sidebar.classList.add('closed');
+        });
+    }
 
     // New chat
     els.newChatBtn.addEventListener('click', newChat);
@@ -248,10 +269,9 @@ function renderModelOptions() {
 function updateUI() {
     const model = PROVIDERS[state.provider].models.find(m => m.id === state.model);
     els.selectValue.textContent = model ? model.label : state.model;
-    els.headerModel.textContent = state.model;
-
+    // els.headerModel.textContent = state.model;
     const conv = state.conversations.find(c => c.id === state.activeConversationId);
-    els.headerTitle.textContent = conv ? conv.title : 'New Chat';
+    // els.headerTitle.textContent = conv ? conv.title : 'New Chat';
 
     els.tokenCounter.style.display = state.settings.showTokens ? 'flex' : 'none';
 }
@@ -280,6 +300,7 @@ function newChat() {
     updateUI();
     els.messageInput.focus();
     els.sidebar.classList.remove('open');
+    els.sidebarOverlay.classList.remove('show');
 }
 
 function createConversation(firstMessage) {
@@ -321,6 +342,7 @@ function loadConversation(id) {
     renderChatList();
     updateUI();
     els.sidebar.classList.remove('open');
+    els.sidebarOverlay.classList.remove('show');
     scrollToBottom();
 }
 
