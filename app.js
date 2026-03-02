@@ -615,7 +615,8 @@ function appendMessageToDOM(msg) {
     div.id = msg.id || '';
 
     const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-    const modelTag = msg.model ? `<span class="message-model-tag">${msg.model}</span>` : '';
+    // Hide model tag per instructions
+    const modelTag = '';
 
     div.innerHTML = `
         <div class="message-avatar">${msg.role === 'user' ? 'U' : 'AI'}</div>
