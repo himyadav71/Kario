@@ -12,7 +12,7 @@ const PROVIDERS = {
         authToken: 'sk-orbit-e90b5d832142349b74b8b763569b945c',
         useProxy: true,
         apiFormat: 'openai',
-        defaultModel: 'gemini-3-flash-preview',
+        defaultModel: 'Kairo-3-flash-preview',
         models: [
             { id: 'gemini-3-pro-preview', label: 'Kairo 3 Pro Preview', desc: 'Flagship (PRO) · 1M ctx', tier: 'opus' },
             { id: 'gemini-3-pro-image-preview', label: 'Kairo 3 Pro Image', desc: 'Flagship (PRO) · 1M ctx', tier: 'opus' },
@@ -1381,3 +1381,4 @@ window.copyMessageContent = function (btn) {
 
 // ---- Start ----
 document.addEventListener('DOMContentLoaded', init);
+
