@@ -254,212 +254,233 @@
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Settings Tabs -->
-                <div class="settings-tabs" id="settingsTabs">
-                    <button class="settings-tab active" data-tab="general">General</button>
-                    <button class="settings-tab orbit-tab" data-tab="orbit">🌐 Orbit</button>
-                    <button class="settings-tab openai-tab" data-tab="openai">🤖 OpenAI</button>
-                    <button class="settings-tab gemini-tab" data-tab="gemini">✨ Gemini</button>
-                    <button class="settings-tab groq-tab" data-tab="groq">⚡ Groq</button>
-                </div>
-
-                <!-- General Tab -->
-                <div class="settings-panel active" id="panel-general">
-                    <div class="settings-group">
-                        <h3>System Prompt</h3>
-                        <div class="setting-item">
-                            <textarea id="settingSystemPrompt" class="setting-textarea" rows="4"
-                                placeholder="You are a helpful AI assistant..."></textarea>
-                        </div>
+                <!-- Lock Screen -->
+                <div class="settings-lock-screen" id="settingsLockScreen">
+                    <div class="lock-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
                     </div>
-                    <div class="settings-group">
-                        <h3>Behavior</h3>
-                        <div class="setting-item toggle-item">
-                            <label>Stream responses</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="settingStream" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="setting-item toggle-item">
-                            <label>Show token counter</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="settingTokens" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
+                    <h3>Secure Settings</h3>
+                    <p>Enter the master password to access API keys and provider configurations.</p>
+                    <div class="password-input-group">
+                        <input type="password" id="settingsPasswordInput" placeholder="Password" autofocus>
+                        <button class="btn btn-primary" id="unlockSettingsBtn">Unlock</button>
                     </div>
                 </div>
 
-                <!-- Orbit Tab -->
-                <div class="settings-panel" id="panel-orbit">
-                    <div class="provider-settings-header orbit-theme">
-                        <div class="psh-icon">🌐</div>
-                        <div>
-                            <h3>Orbit Provider</h3>
-                            <p>Access Claude & Gemini models via Orbit's unified API</p>
-                        </div>
+                <!-- Settings Content (hidden until unlocked) -->
+                <div class="settings-content hidden" id="settingsContent">
+                    <!-- Settings Tabs -->
+                    <div class="settings-tabs" id="settingsTabs">
+                        <button class="settings-tab active" data-tab="general">General</button>
+                        <button class="settings-tab orbit-tab" data-tab="orbit">🌐 Orbit</button>
+                        <button class="settings-tab openai-tab" data-tab="openai">🤖 OpenAI</button>
+                        <button class="settings-tab gemini-tab" data-tab="gemini">✨ Gemini</button>
+                        <button class="settings-tab groq-tab" data-tab="groq">⚡ Groq</button>
                     </div>
-                    <div class="settings-group">
-                        <div class="setting-item">
-                            <label>Base URL</label>
-                            <input type="url" id="settingOrbitBaseUrl" class="setting-input"
-                                placeholder="https://api.orbit-provider.com/v1"
-                                value="https://api.orbit-provider.com/v1">
-                        </div>
-                        <div class="setting-item">
-                            <label>API Key</label>
-                            <div class="token-input-wrap">
-                                <input type="password" id="settingOrbitKey" class="setting-input"
-                                    placeholder="sk-orbit-...">
-                                <button class="btn-icon btn-sm toggle-vis-btn" data-target="settingOrbitKey">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                        <circle cx="12" cy="12" r="3" />
-                                    </svg>
-                                </button>
+
+                    <!-- General Tab -->
+                    <div class="settings-panel active" id="panel-general">
+                        <div class="settings-group">
+                            <h3>System Prompt</h3>
+                            <div class="setting-item">
+                                <textarea id="settingSystemPrompt" class="setting-textarea" rows="4"
+                                    placeholder="You are a helpful AI assistant..."></textarea>
                             </div>
                         </div>
-                        <div class="setting-item toggle-item">
-                            <label>Enable Orbit Provider</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="settingOrbitEnabled" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- OpenAI Tab -->
-                <div class="settings-panel" id="panel-openai">
-                    <div class="provider-settings-header openai-theme">
-                        <div class="psh-icon">🤖</div>
-                        <div>
-                            <h3>OpenAI</h3>
-                            <p>Use your own OpenAI API key for GPT-4o, o1, and more</p>
-                        </div>
-                    </div>
-                    <div class="settings-group">
-                        <div class="setting-item">
-                            <label>Base URL</label>
-                            <input type="url" id="settingOpenAIBaseUrl" class="setting-input"
-                                placeholder="https://api.openai.com/v1" value="https://api.openai.com/v1">
-                        </div>
-                        <div class="setting-item">
-                            <label>API Key</label>
-                            <div class="token-input-wrap">
-                                <input type="password" id="settingOpenAIKey" class="setting-input" placeholder="sk-...">
-                                <button class="btn-icon btn-sm toggle-vis-btn" data-target="settingOpenAIKey">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                        <circle cx="12" cy="12" r="3" />
-                                    </svg>
-                                </button>
+                        <div class="settings-group">
+                            <h3>Behavior</h3>
+                            <div class="setting-item toggle-item">
+                                <label>Stream responses</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="settingStream" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item toggle-item">
+                                <label>Show token counter</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="settingTokens" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
                             </div>
                         </div>
-                        <div class="setting-item toggle-item">
-                            <label>Enable OpenAI</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="settingOpenAIEnabled">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
                     </div>
-                </div>
 
-                <!-- Gemini Tab -->
-                <div class="settings-panel" id="panel-gemini">
-                    <div class="provider-settings-header gemini-theme">
-                        <div class="psh-icon">✨</div>
-                        <div>
-                            <h3>Google Gemini (Direct)</h3>
-                            <p>Use your own Google AI API key for Gemini models directly</p>
-                        </div>
-                    </div>
-                    <div class="settings-group">
-                        <div class="setting-item">
-                            <label>Base URL</label>
-                            <input type="url" id="settingGeminiBaseUrl" class="setting-input"
-                                placeholder="https://generativelanguage.googleapis.com/v1beta"
-                                value="https://generativelanguage.googleapis.com/v1beta">
-                        </div>
-                        <div class="setting-item">
-                            <label>API Key</label>
-                            <div class="token-input-wrap">
-                                <input type="password" id="settingGeminiKey" class="setting-input"
-                                    placeholder="AIza...">
-                                <button class="btn-icon btn-sm toggle-vis-btn" data-target="settingGeminiKey">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                        <circle cx="12" cy="12" r="3" />
-                                    </svg>
-                                </button>
+                    <!-- Orbit Tab -->
+                    <div class="settings-panel" id="panel-orbit">
+                        <div class="provider-settings-header orbit-theme">
+                            <div class="psh-icon">🌐</div>
+                            <div>
+                                <h3>Orbit Provider</h3>
+                                <p>Access Claude & Gemini models via Orbit's unified API</p>
                             </div>
                         </div>
-                        <div class="setting-item toggle-item">
-                            <label>Enable Gemini (Direct)</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="settingGeminiEnabled">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Groq Tab -->
-                <div class="settings-panel" id="panel-groq">
-                    <div class="provider-settings-header groq-theme">
-                        <div class="psh-icon">⚡</div>
-                        <div>
-                            <h3>Groq</h3>
-                            <p>Fast LPU inference using Groq's API for Llama and Mixtral models</p>
-                        </div>
-                    </div>
-                    <div class="settings-group">
-                        <div class="setting-item">
-                            <label>Base URL</label>
-                            <input type="url" id="settingGroqBaseUrl" class="setting-input"
-                                placeholder="https://api.groq.com/openai/v1" value="https://api.groq.com/openai/v1">
-                        </div>
-                        <div class="setting-item">
-                            <label>API Key</label>
-                            <div class="token-input-wrap">
-                                <input type="password" id="settingGroqKey" class="setting-input" placeholder="gsk_...">
-                                <button class="btn-icon btn-sm toggle-vis-btn" data-target="settingGroqKey">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                        <circle cx="12" cy="12" r="3" />
-                                    </svg>
-                                </button>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Base URL</label>
+                                <input type="url" id="settingOrbitBaseUrl" class="setting-input"
+                                    placeholder="https://api.orbit-provider.com/v1"
+                                    value="https://api.orbit-provider.com/v1">
+                            </div>
+                            <div class="setting-item">
+                                <label>API Key</label>
+                                <div class="token-input-wrap">
+                                    <input type="password" id="settingOrbitKey" class="setting-input"
+                                        placeholder="sk-orbit-...">
+                                    <button class="btn-icon btn-sm toggle-vis-btn" data-target="settingOrbitKey">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="setting-item toggle-item">
+                                <label>Enable Orbit Provider</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="settingOrbitEnabled" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
                             </div>
                         </div>
-                        <div class="setting-item toggle-item">
-                            <label>Enable Groq</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="settingGroqEnabled">
-                                <span class="toggle-slider"></span>
-                            </label>
+                    </div>
+
+                    <!-- OpenAI Tab -->
+                    <div class="settings-panel" id="panel-openai">
+                        <div class="provider-settings-header openai-theme">
+                            <div class="psh-icon">🤖</div>
+                            <div>
+                                <h3>OpenAI</h3>
+                                <p>Use your own OpenAI API key for GPT-4o, o1, and more</p>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Base URL</label>
+                                <input type="url" id="settingOpenAIBaseUrl" class="setting-input"
+                                    placeholder="https://api.openai.com/v1" value="https://api.openai.com/v1">
+                            </div>
+                            <div class="setting-item">
+                                <label>API Key</label>
+                                <div class="token-input-wrap">
+                                    <input type="password" id="settingOpenAIKey" class="setting-input"
+                                        placeholder="sk-...">
+                                    <button class="btn-icon btn-sm toggle-vis-btn" data-target="settingOpenAIKey">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="setting-item toggle-item">
+                                <label>Enable OpenAI</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="settingOpenAIEnabled">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gemini Tab -->
+                    <div class="settings-panel" id="panel-gemini">
+                        <div class="provider-settings-header gemini-theme">
+                            <div class="psh-icon">✨</div>
+                            <div>
+                                <h3>Google Gemini (Direct)</h3>
+                                <p>Use your own Google AI API key for Gemini models directly</p>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Base URL</label>
+                                <input type="url" id="settingGeminiBaseUrl" class="setting-input"
+                                    placeholder="https://generativelanguage.googleapis.com/v1beta"
+                                    value="https://generativelanguage.googleapis.com/v1beta">
+                            </div>
+                            <div class="setting-item">
+                                <label>API Key</label>
+                                <div class="token-input-wrap">
+                                    <input type="password" id="settingGeminiKey" class="setting-input"
+                                        placeholder="AIza...">
+                                    <button class="btn-icon btn-sm toggle-vis-btn" data-target="settingGeminiKey">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="setting-item toggle-item">
+                                <label>Enable Gemini (Direct)</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="settingGeminiEnabled">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Groq Tab -->
+                    <div class="settings-panel" id="panel-groq">
+                        <div class="provider-settings-header groq-theme">
+                            <div class="psh-icon">⚡</div>
+                            <div>
+                                <h3>Groq</h3>
+                                <p>Fast LPU inference using Groq's API for Llama and Mixtral models</p>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Base URL</label>
+                                <input type="url" id="settingGroqBaseUrl" class="setting-input"
+                                    placeholder="https://api.groq.com/openai/v1" value="https://api.groq.com/openai/v1">
+                            </div>
+                            <div class="setting-item">
+                                <label>API Key</label>
+                                <div class="token-input-wrap">
+                                    <input type="password" id="settingGroqKey" class="setting-input"
+                                        placeholder="gsk_...">
+                                    <button class="btn-icon btn-sm toggle-vis-btn" data-target="settingGroqKey">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="setting-item toggle-item">
+                                <label>Enable Groq</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="settingGroqEnabled">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="resetSettingsBtn">Reset All</button>
-                <button class="btn btn-primary" id="saveSettingsBtn">Save Changes</button>
+                <div class="modal-footer hidden" id="settingsModalFooter">
+                    <button class="btn btn-secondary" id="resetSettingsBtn">Reset All</button>
+                    <button class="btn btn-primary" id="saveSettingsBtn">Save Changes</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
+        <!-- Toast Container -->
+        <div class="toast-container" id="toastContainer"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
-    <script src="app.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+        <script src="app.js"></script>
 </body>
 
 </html>

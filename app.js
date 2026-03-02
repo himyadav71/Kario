@@ -167,6 +167,11 @@ const els = {
     saveSettingsBtn: $('#saveSettingsBtn'),
     toastContainer: $('#toastContainer'),
     ambientBg: $('#ambientBg'),
+    settingsLockScreen: $('#settingsLockScreen'),
+    settingsPasswordInput: $('#settingsPasswordInput'),
+    unlockSettingsBtn: $('#unlockSettingsBtn'),
+    settingsContent: $('#settingsContent'),
+    settingsModalFooter: $('#settingsModalFooter'),
 };
 
 // ---- Initialize ----
@@ -303,6 +308,12 @@ function setupEventListeners() {
     });
     els.saveSettingsBtn.addEventListener('click', saveSettings);
     els.resetSettingsBtn.addEventListener('click', resetSettings);
+
+    // Password Unlock
+    els.unlockSettingsBtn.addEventListener('click', validateSettingsPassword);
+    els.settingsPasswordInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') validateSettingsPassword();
+    });
 
     // Settings tabs
     els.settingsTabs.querySelectorAll('.settings-tab').forEach(tab => {
@@ -1163,7 +1174,27 @@ function loadSettings() {
 
 function openSettings() {
     loadSettings();
+    // Reset to lock screen
+    els.settingsLockScreen.classList.remove('hidden');
+    els.settingsContent.classList.add('hidden');
+    els.settingsModalFooter.classList.add('hidden');
+    els.settingsPasswordInput.value = '';
     els.settingsModal.classList.remove('hidden');
+    setTimeout(() => els.settingsPasswordInput.focus(), 100);
+}
+
+function validateSettingsPassword() {
+    const password = els.settingsPasswordInput.value;
+    if (password === '8492') {
+        els.settingsLockScreen.classList.add('hidden');
+        els.settingsContent.classList.remove('hidden');
+        els.settingsModalFooter.classList.remove('hidden');
+        showToast('Settings unlocked', 'success');
+    } else {
+        showToast('Invalid password', 'error');
+        els.settingsPasswordInput.value = '';
+        els.settingsPasswordInput.focus();
+    }
 }
 
 function closeSettings() {
