@@ -14,18 +14,18 @@ const PROVIDERS = {
         apiFormat: 'openai',
         defaultModel: 'gemini-3-flash-preview',
         models: [
-            { id: 'gemini-3-pro-preview', label: 'Gemini 3 Pro Preview', desc: 'Flagship (PRO) · 1M ctx', tier: 'opus' },
-            { id: 'gemini-3-pro-image-preview', label: 'Gemini 3 Pro Image', desc: 'Flagship (PRO) · 1M ctx', tier: 'opus' },
-            { id: 'gemini-3-flash-preview', label: 'Gemini 3 Flash', desc: 'Fast · 1M ctx', tier: 'sonnet' },
-            { id: 'gemini-2.5-pro-preview', label: 'Gemini 2.5 Pro', desc: 'Pro · 1M ctx', tier: 'opus' },
-            { id: 'gemini-2.5-flash-preview', label: 'Gemini 2.5 Flash', desc: 'Balanced · 1M ctx', tier: 'sonnet' },
-            { id: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite', desc: 'Lite · 1M ctx', tier: 'haiku' },
-            { id: 'gemini-2.5-computer-use-preview-10-2025', label: 'Gemini 2.5 Computer Use', desc: 'Specialized (PRO)', tier: 'opus' },
-            { id: 'claude-opus-4-6-20260205', label: 'Claude Opus 4.6', desc: 'Flagship (PRO) · 256K ctx', tier: 'opus' },
-            { id: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', desc: 'Balanced · 200K ctx', tier: 'sonnet' },
-            { id: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5', desc: 'Fast · 200K ctx', tier: 'haiku' },
-            { id: 'gemini-claude-opus-4-6-thinking', label: 'Claude Opus 4.6 Thinking', desc: 'PRO · IDE mode', tier: 'opus' },
-            { id: 'gemini-claude-sonnet-4-6', label: 'Claude Sonnet 4.6 IDE', desc: 'Balanced · IDE mode', tier: 'sonnet' },
+            { id: 'gemini-3-pro-preview', label: 'Kairo 3 Pro Preview', desc: 'Flagship (PRO) · 1M ctx', tier: 'opus' },
+            { id: 'gemini-3-pro-image-preview', label: 'Kairo 3 Pro Image', desc: 'Flagship (PRO) · 1M ctx', tier: 'opus' },
+            { id: 'gemini-3-flash-preview', label: 'Kairo 3 Flash', desc: 'Fast · 1M ctx', tier: 'sonnet' },
+            { id: 'gemini-2.5-pro-preview', label: 'Kairo 2.5 Pro', desc: 'Pro · 1M ctx', tier: 'opus' },
+            { id: 'gemini-2.5-flash-preview', label: 'Kairo 2.5 Flash', desc: 'Balanced · 1M ctx', tier: 'sonnet' },
+            { id: 'gemini-2.5-flash-lite', label: 'Kairo 2.5 Flash Lite', desc: 'Lite · 1M ctx', tier: 'haiku' },
+            { id: 'gemini-2.5-computer-use-preview-10-2025', label: 'Kairo 2.5 Computer Use', desc: 'Specialized (PRO)', tier: 'opus' },
+            { id: 'claude-opus-4-6-20260205', label: 'Kairo Opus 4.6', desc: 'Flagship (PRO) · 256K ctx', tier: 'opus' },
+            { id: 'claude-sonnet-4-6', label: 'Kairo Sonnet 4.6', desc: 'Balanced · 200K ctx', tier: 'sonnet' },
+            { id: 'claude-haiku-4-5-20251001', label: 'Kairo Haiku 4.5', desc: 'Fast · 200K ctx', tier: 'haiku' },
+            { id: 'gemini-claude-opus-4-6-thinking', label: 'Kairo Opus 4.6 Thinking', desc: 'PRO · IDE mode', tier: 'opus' },
+            { id: 'gemini-claude-sonnet-4-6', label: 'Kairo Sonnet 4.6 IDE', desc: 'Balanced · IDE mode', tier: 'sonnet' },
         ]
     },
     openai: {
@@ -615,7 +615,7 @@ function appendMessageToDOM(msg) {
     div.id = msg.id || '';
 
     const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-    const modelTag = msg.model ? `<span class="message-model-tag">${msg.model}</span>` : '';
+    const modelTag = ''; // Hidden: only show "Himanshu AI"
 
     div.innerHTML = `
         <div class="message-avatar">${msg.role === 'user' ? 'U' : 'AI'}</div>
