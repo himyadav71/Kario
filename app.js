@@ -1,54 +1,127 @@
 /* ============================================
-   Orbit AI Chat — Application Logic
+   Himanshu AI Chat — Multi-Provider Application
    ============================================ */
 
 // ---- Provider Configurations ----
 const PROVIDERS = {
-    gemini: {
-        name: 'Gemini',
+    orbit: {
+        name: 'Orbit',
+        icon: '🌐',
+        color: '#7c3aed',
         baseUrl: 'https://api.orbit-provider.com/v1',
         authToken: 'sk-orbit-e90b5d832142349b74b8b763569b945c',
+        useProxy: true,
+        apiFormat: 'openai',
         defaultModel: 'gemini-3-flash-preview',
         models: [
-            { id: 'gemini-3-pro-preview', label: 'Gemini 3 Pro Preview', desc: 'Most capable Gemini model', tier: 'opus' },
-            { id: 'gemini-3-flash-preview', label: 'Gemini 3 Flash Preview', desc: 'Fast & balanced', tier: 'sonnet' },
-            { id: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite', desc: 'Fastest responses, lightweight', tier: 'haiku' },
+            { id: 'gemini-3-pro-preview', label: 'Gemini 3 Pro Preview', desc: 'Flagship (PRO) · 1M ctx', tier: 'opus' },
+            { id: 'gemini-3-pro-image-preview', label: 'Gemini 3 Pro Image', desc: 'Flagship (PRO) · 1M ctx', tier: 'opus' },
+            { id: 'gemini-3-flash-preview', label: 'Gemini 3 Flash', desc: 'Fast · 1M ctx', tier: 'sonnet' },
+            { id: 'gemini-2.5-pro-preview', label: 'Gemini 2.5 Pro', desc: 'Pro · 1M ctx', tier: 'opus' },
+            { id: 'gemini-2.5-flash-preview', label: 'Gemini 2.5 Flash', desc: 'Balanced · 1M ctx', tier: 'sonnet' },
+            { id: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite', desc: 'Lite · 1M ctx', tier: 'haiku' },
+            { id: 'gemini-2.5-computer-use-preview-10-2025', label: 'Gemini 2.5 Computer Use', desc: 'Specialized (PRO)', tier: 'opus' },
+            { id: 'claude-opus-4-6-20260205', label: 'Claude Opus 4.6', desc: 'Flagship (PRO) · 256K ctx', tier: 'opus' },
+            { id: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', desc: 'Balanced · 200K ctx', tier: 'sonnet' },
+            { id: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5', desc: 'Fast · 200K ctx', tier: 'haiku' },
+            { id: 'gemini-claude-opus-4-6-thinking', label: 'Claude Opus 4.6 Thinking', desc: 'PRO · IDE mode', tier: 'opus' },
+            { id: 'gemini-claude-sonnet-4-6', label: 'Claude Sonnet 4.6 IDE', desc: 'Balanced · IDE mode', tier: 'sonnet' },
         ]
     },
-    claude: {
-        name: 'Claude',
-        baseUrl: 'https://api.orbit-provider.com/v1',
-        authToken: 'sk-orbit-e90b5d832142349b74b8b763569b945c',
-        defaultModel: 'gemini-claude-sonnet-4-5-thinking',
+    openai: {
+        name: 'OpenAI',
+        icon: '🤖',
+        color: '#10a37f',
+        baseUrl: 'https://api.openai.com/v1',
+        authToken: '',
+        useProxy: true,
+        apiFormat: 'openai',
+        defaultModel: 'gpt-4o',
         models: [
-            { id: 'gemini-claude-opus-4-6-thinking', label: 'Claude Opus 4.6 Thinking', desc: 'Most powerful reasoning', tier: 'opus' },
-            { id: 'gemini-claude-sonnet-4-5-thinking', label: 'Claude Sonnet 4.5 Thinking', desc: 'Balanced with deep thinking', tier: 'sonnet' },
-            { id: 'gemini-claude-sonnet-4-5', label: 'Claude Sonnet 4.5', desc: 'Fast & efficient', tier: 'haiku' },
+            { id: 'gpt-4o', label: 'GPT-4o', desc: 'Most capable · 128K ctx', tier: 'opus' },
+            { id: 'gpt-4o-mini', label: 'GPT-4o Mini', desc: 'Fast & affordable · 128K ctx', tier: 'haiku' },
+            { id: 'gpt-4-turbo', label: 'GPT-4 Turbo', desc: 'Previous flagship · 128K ctx', tier: 'sonnet' },
+            { id: 'o1', label: 'o1', desc: 'Advanced reasoning · 200K ctx', tier: 'opus' },
+            { id: 'o1-mini', label: 'o1 Mini', desc: 'Fast reasoning · 128K ctx', tier: 'sonnet' },
+            { id: 'o3-mini', label: 'o3 Mini', desc: 'Newest reasoning · 200K ctx', tier: 'sonnet' },
+            { id: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo', desc: 'Legacy fast model · 16K ctx', tier: 'haiku' },
+        ]
+    },
+    'gemini-direct': {
+        name: 'Gemini',
+        icon: '✨',
+        color: '#4285f4',
+        baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+        authToken: '',
+        useProxy: false,
+        apiFormat: 'gemini',
+        defaultModel: 'gemini-2.5-flash',
+        models: [
+            { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro', desc: 'Most capable · 1M ctx', tier: 'opus' },
+            { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash', desc: 'Fast & balanced · 1M ctx', tier: 'sonnet' },
+            { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash', desc: 'Previous gen fast · 1M ctx', tier: 'sonnet' },
+            { id: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro', desc: 'Stable pro · 2M ctx', tier: 'opus' },
+            { id: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash', desc: 'Stable fast · 1M ctx', tier: 'haiku' },
+        ]
+    },
+    groq: {
+        name: 'Groq',
+        icon: '⚡',
+        color: '#f97316',
+        baseUrl: 'https://api.groq.com/openai/v1',
+        authToken: '',
+        useProxy: true,
+        apiFormat: 'openai',
+        defaultModel: 'llama-3.3-70b-versatile',
+        models: [
+            { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', desc: 'Fast & capable · 8K ctx', tier: 'sonnet' },
+            { id: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B', desc: 'Instant · 8K ctx', tier: 'haiku' },
+            { id: 'mixtral-8x7b-32768', label: 'Mixtral 8x7B', desc: 'MoE · 32K ctx', tier: 'sonnet' },
+            { id: 'gemma-2-9b-it', label: 'Gemma 2 9B', desc: 'Google · 8K ctx', tier: 'haiku' },
         ]
     }
 };
 
 // ---- State ----
-const savedSettings = JSON.parse(localStorage.getItem('orbit_settings') || 'null');
-if (savedSettings && typeof savedSettings.authToken === 'string' && savedSettings.authToken.includes('***')) {
-    savedSettings.authToken = PROVIDERS.gemini.authToken;
-}
+const savedSettings = JSON.parse(localStorage.getItem('hai_settings') || 'null');
+const savedProviderKeys = JSON.parse(localStorage.getItem('hai_provider_keys') || 'null');
 
 const state = {
-    provider: 'gemini',
-    model: PROVIDERS.gemini.defaultModel,
-    conversations: JSON.parse(localStorage.getItem('orbit_conversations') || '[]'),
+    provider: 'orbit',
+    model: PROVIDERS.orbit.defaultModel,
+    conversations: JSON.parse(localStorage.getItem('hai_conversations') || '[]'),
     activeConversationId: null,
     messages: [],
     isGenerating: false,
     abortController: null,
+    activeReader: null, // Track active stream reader for proper cancellation
     settings: savedSettings || {
-        baseUrl: PROVIDERS.gemini.baseUrl,
-        authToken: PROVIDERS.gemini.authToken,
         systemPrompt: 'You are a helpful, knowledgeable, and friendly AI assistant. Provide clear, accurate, and well-structured responses. Use markdown formatting when helpful.',
         stream: true,
         showTokens: true,
     },
+    providerKeys: savedProviderKeys || {
+        orbit: {
+            baseUrl: 'https://api.orbit-provider.com/v1',
+            apiKey: PROVIDERS.orbit.authToken,
+            enabled: true,
+        },
+        openai: {
+            baseUrl: 'https://api.openai.com/v1',
+            apiKey: '',
+            enabled: false,
+        },
+        'gemini-direct': {
+            baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+            apiKey: '',
+            enabled: false,
+        },
+        groq: {
+            baseUrl: 'https://api.groq.com/openai/v1',
+            apiKey: '',
+            enabled: false,
+        }
+    }
 };
 
 // ---- DOM Elements ----
@@ -61,8 +134,7 @@ const els = {
     sidebarToggle: $('#sidebarToggle'),
     closeSidebarBtn: $('#closeSidebarBtn'),
     newChatBtn: $('#newChatBtn'),
-    providerGemini: $('#providerGemini'),
-    providerClaude: $('#providerClaude'),
+    providerTabs: $('#providerTabs'),
     modelSelect: $('#modelSelect'),
     selectTrigger: $('#selectTrigger'),
     selectValue: $('#selectValue'),
@@ -73,6 +145,8 @@ const els = {
     messagesContainer: $('#messagesContainer'),
     messagesInner: $('#messagesInner'),
     welcomeScreen: $('#welcomeScreen'),
+    welcomeProviderCards: $('#welcomeProviderCards'),
+    badgeLabel: $('#badgeLabel'),
     tokenCount: $('#tokenCount'),
     tokenCounter: $('#tokenCounter'),
     exportBtn: $('#exportBtn'),
@@ -85,24 +159,26 @@ const els = {
     maxTokens: $('#maxTokens'),
     settingsModal: $('#settingsModal'),
     closeSettingsBtn: $('#closeSettingsBtn'),
-    settingBaseUrl: $('#settingBaseUrl'),
-    settingAuthToken: $('#settingAuthToken'),
-    toggleTokenVisibility: $('#toggleTokenVisibility'),
+    settingsTabs: $('#settingsTabs'),
     settingSystemPrompt: $('#settingSystemPrompt'),
     settingStream: $('#settingStream'),
     settingTokens: $('#settingTokens'),
     resetSettingsBtn: $('#resetSettingsBtn'),
     saveSettingsBtn: $('#saveSettingsBtn'),
     toastContainer: $('#toastContainer'),
+    ambientBg: $('#ambientBg'),
 };
 
 // ---- Initialize ----
 function init() {
     setupMarked();
+    renderProviderTabs();
+    renderWelcomeProviderCards();
     setupEventListeners();
     renderModelOptions();
     renderChatList();
     loadSettings();
+    applyProviderTheme();
     updateUI();
 }
 
@@ -111,7 +187,6 @@ function setupMarked() {
     const renderer = new marked.Renderer();
 
     renderer.code = function (code, language) {
-        // Handle the case where code might be an object (marked v12+)
         if (typeof code === 'object') {
             language = code.lang;
             code = code.text;
@@ -138,15 +213,52 @@ function setupMarked() {
     });
 }
 
+// ---- Provider Tab Rendering ----
+function renderProviderTabs() {
+    const tabsHtml = Object.keys(PROVIDERS).map(key => {
+        const p = PROVIDERS[key];
+        const isEnabled = state.providerKeys[key]?.enabled;
+        if (!isEnabled) return '';
+        return `
+            <button class="provider-tab ${key === state.provider ? 'active' : ''}" data-provider="${key}">
+                <span class="tab-dot"></span>
+                <span class="tab-label">${p.name}</span>
+            </button>
+        `;
+    }).join('');
+
+    els.providerTabs.innerHTML = tabsHtml;
+
+    els.providerTabs.querySelectorAll('.provider-tab').forEach(tab => {
+        tab.addEventListener('click', () => switchProvider(tab.dataset.provider));
+    });
+}
+
+function renderWelcomeProviderCards() {
+    const cardsHtml = Object.keys(PROVIDERS).map(key => {
+        const p = PROVIDERS[key];
+        const isEnabled = state.providerKeys[key]?.enabled;
+        const statusClass = isEnabled ? 'active' : 'disabled';
+        const statusText = isEnabled ? 'Active' : 'Not configured';
+        const cardClass = key === 'orbit' ? 'orbit-card' : key === 'openai' ? 'openai-card' : 'gemini-card';
+        return `
+            <div class="provider-card ${cardClass}">
+                <span class="pc-dot"></span>
+                <span>${p.name}</span>
+                <span class="pc-status">${statusText}</span>
+            </div>
+        `;
+    }).join('');
+
+    els.welcomeProviderCards.innerHTML = cardsHtml;
+}
+
 // ---- Event Listeners ----
 function setupEventListeners() {
     // Sidebar toggle
     els.sidebarToggle.addEventListener('click', () => {
-        const isOpening = els.sidebar.classList.contains('closed') || !els.sidebar.classList.contains('open');
-
         els.sidebar.classList.toggle('open');
         els.sidebar.classList.toggle('closed');
-
         if (window.innerWidth <= 768) {
             els.sidebarOverlay.classList.toggle('show');
         }
@@ -155,7 +267,7 @@ function setupEventListeners() {
     els.sidebarOverlay.addEventListener('click', () => {
         els.sidebar.classList.remove('open');
         els.sidebarOverlay.classList.remove('show');
-        els.sidebar.classList.add('closed'); // Ensure it closes on desktop too if toggled
+        els.sidebar.classList.add('closed');
     });
 
     if (els.closeSidebarBtn) {
@@ -168,10 +280,6 @@ function setupEventListeners() {
 
     // New chat
     els.newChatBtn.addEventListener('click', newChat);
-
-    // Provider switch
-    els.providerGemini.addEventListener('click', () => switchProvider('gemini'));
-    els.providerClaude.addEventListener('click', () => switchProvider('claude'));
 
     // Model select
     els.selectTrigger.addEventListener('click', () => {
@@ -195,9 +303,25 @@ function setupEventListeners() {
     });
     els.saveSettingsBtn.addEventListener('click', saveSettings);
     els.resetSettingsBtn.addEventListener('click', resetSettings);
-    els.toggleTokenVisibility.addEventListener('click', () => {
-        const input = els.settingAuthToken;
-        input.type = input.type === 'password' ? 'text' : 'password';
+
+    // Settings tabs
+    els.settingsTabs.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            els.settingsTabs.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            $$('.settings-panel').forEach(p => p.classList.remove('active'));
+            $(`#panel-${tab.dataset.tab}`).classList.add('active');
+        });
+    });
+
+    // Toggle visibility buttons
+    $$('.toggle-vis-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = $(`#${btn.dataset.target}`);
+            if (input) {
+                input.type = input.type === 'password' ? 'text' : 'password';
+            }
+        });
     });
 
     // Input
@@ -234,24 +358,49 @@ function setupEventListeners() {
 
 // ---- Provider & Model Management ----
 function switchProvider(provider) {
+    if (!PROVIDERS[provider]) return;
     state.provider = provider;
     state.model = PROVIDERS[provider].defaultModel;
 
-    $$('.provider-btn').forEach(b => b.classList.remove('active'));
-    $(`[data-provider="${provider}"]`).classList.add('active');
-
+    renderProviderTabs();
     renderModelOptions();
+    applyProviderTheme();
     updateUI();
+}
+
+function applyProviderTheme() {
+    document.body.setAttribute('data-provider', state.provider);
+    const p = PROVIDERS[state.provider];
+    els.badgeLabel.textContent = p.name;
 }
 
 function renderModelOptions() {
     const models = PROVIDERS[state.provider].models;
-    els.selectOptions.innerHTML = models.map(m => `
-        <div class="select-option ${m.id === state.model ? 'active' : ''}" data-model="${m.id}">
-            <span class="option-label">${m.label}</span>
-            <span class="option-desc">${m.desc}</span>
-        </div>
-    `).join('');
+
+    // Group by tier
+    const groups = { opus: [], sonnet: [], haiku: [] };
+    models.forEach(m => {
+        if (groups[m.tier]) groups[m.tier].push(m);
+    });
+
+    const tierNames = { opus: 'Flagship', sonnet: 'Balanced', haiku: 'Fast & Light' };
+
+    let html = '';
+    for (const tier of ['opus', 'sonnet', 'haiku']) {
+        if (groups[tier].length === 0) continue;
+        html += `<div class="select-group-label">${tierNames[tier]}</div>`;
+        html += groups[tier].map(m => `
+            <div class="select-option ${m.id === state.model ? 'active' : ''}" data-model="${m.id}">
+                <div class="option-info">
+                    <span class="option-label">${m.label}</span>
+                    <span class="option-desc">${m.desc}</span>
+                </div>
+                <span class="option-tier ${m.tier}">${m.tier === 'opus' ? 'PRO' : m.tier === 'sonnet' ? 'STD' : 'LITE'}</span>
+            </div>
+        `).join('');
+    }
+
+    els.selectOptions.innerHTML = html;
 
     els.selectOptions.querySelectorAll('.select-option').forEach(opt => {
         opt.addEventListener('click', () => {
@@ -269,10 +418,6 @@ function renderModelOptions() {
 function updateUI() {
     const model = PROVIDERS[state.provider].models.find(m => m.id === state.model);
     els.selectValue.textContent = model ? model.label : state.model;
-    // els.headerModel.textContent = state.model;
-    const conv = state.conversations.find(c => c.id === state.activeConversationId);
-    // els.headerTitle.textContent = conv ? conv.title : 'New Chat';
-
     els.tokenCounter.style.display = state.settings.showTokens ? 'flex' : 'none';
 }
 
@@ -281,12 +426,33 @@ function newChat() {
     state.activeConversationId = null;
     state.messages = [];
     els.messagesInner.innerHTML = '';
-    els.messagesInner.appendChild(els.welcomeScreen.cloneNode(true));
 
-    // Re-attach quick prompt listeners
+    // Clone and re-insert welcome screen
+    const welcomeClone = els.welcomeScreen.cloneNode(true);
+    els.messagesInner.appendChild(welcomeClone);
+
     const welcome = els.messagesInner.querySelector('.welcome-screen');
     if (welcome) {
         welcome.style.display = 'flex';
+        // Re-render provider cards
+        const cardsContainer = welcome.querySelector('#welcomeProviderCards') || welcome.querySelector('.provider-cards');
+        if (cardsContainer) {
+            const cardsHtml = Object.keys(PROVIDERS).map(key => {
+                const p = PROVIDERS[key];
+                const isEnabled = state.providerKeys[key]?.enabled;
+                const statusText = isEnabled ? 'Active' : 'Not configured';
+                const cardClass = key === 'orbit' ? 'orbit-card' : key === 'openai' ? 'openai-card' : 'gemini-card';
+                return `
+                    <div class="provider-card ${cardClass}">
+                        <span class="pc-dot"></span>
+                        <span>${p.name}</span>
+                        <span class="pc-status">${statusText}</span>
+                    </div>
+                `;
+            }).join('');
+            cardsContainer.innerHTML = cardsHtml;
+        }
+
         welcome.querySelectorAll('.quick-prompt').forEach(btn => {
             btn.addEventListener('click', () => {
                 els.messageInput.value = btn.dataset.prompt;
@@ -333,9 +499,9 @@ function loadConversation(id) {
     if (PROVIDERS[conv.provider]) {
         state.provider = conv.provider;
         state.model = conv.model;
-        $$('.provider-btn').forEach(b => b.classList.remove('active'));
-        $(`[data-provider="${state.provider}"]`).classList.add('active');
+        renderProviderTabs();
         renderModelOptions();
+        applyProviderTheme();
     }
 
     renderMessages();
@@ -367,7 +533,7 @@ function clearAllConversations() {
 }
 
 function saveConversations() {
-    localStorage.setItem('orbit_conversations', JSON.stringify(state.conversations));
+    localStorage.setItem('hai_conversations', JSON.stringify(state.conversations));
 }
 
 function saveCurrentConversation() {
@@ -378,6 +544,15 @@ function saveCurrentConversation() {
     }
 }
 
+function getProviderDotColor(providerKey) {
+    const colors = {
+        'orbit': '#7c3aed',
+        'openai': '#10a37f',
+        'gemini-direct': '#4285f4',
+    };
+    return colors[providerKey] || '#7c3aed';
+}
+
 function renderChatList() {
     if (state.conversations.length === 0) {
         els.chatList.innerHTML = '<div class="chat-empty">No conversations yet</div>';
@@ -386,11 +561,7 @@ function renderChatList() {
 
     els.chatList.innerHTML = state.conversations.map(c => `
         <div class="chat-item ${c.id === state.activeConversationId ? 'active' : ''}" data-id="${c.id}">
-            <span class="chat-item-icon">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                </svg>
-            </span>
+            <span class="chat-item-provider-dot" style="background:${getProviderDotColor(c.provider)}"></span>
             <span class="chat-item-text">${escapeHtml(c.title)}</span>
             <button class="chat-item-delete" data-delete="${c.id}" title="Delete">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -418,11 +589,9 @@ function renderChatList() {
 // ---- Message Rendering ----
 function renderMessages() {
     els.messagesInner.innerHTML = '';
-
     state.messages.forEach(msg => {
         appendMessageToDOM(msg);
     });
-
     updateTokenCount();
 }
 
@@ -435,12 +604,14 @@ function appendMessageToDOM(msg) {
     div.id = msg.id || '';
 
     const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+    const modelTag = msg.model ? `<span class="message-model-tag">${msg.model}</span>` : '';
 
     div.innerHTML = `
         <div class="message-avatar">${msg.role === 'user' ? 'U' : 'AI'}</div>
         <div class="message-content">
             <div class="message-header">
                 <span class="message-role">${msg.role === 'user' ? 'You' : 'Himanshu AI'}</span>
+                ${modelTag}
                 <span class="message-time">${time}</span>
             </div>
             <div class="message-body">${msg.role === 'user' ? escapeHtml(msg.content).replace(/\n/g, '<br>') : renderMarkdown(msg.content)}</div>
@@ -462,10 +633,34 @@ function appendMessageToDOM(msg) {
 function renderMarkdown(text) {
     if (!text) return '';
     try {
-        return marked.parse(text);
+        let html = marked.parse(text);
+        // Render inline images from markdown ![alt](url)
+        // marked handles this, but ensure base64 data URIs work
+        return html;
     } catch {
         return escapeHtml(text).replace(/\n/g, '<br>');
     }
+}
+
+// Render image content (base64 or URL)
+function renderImageContent(imageData, mimeType) {
+    if (imageData.startsWith('http')) {
+        return `<div class="ai-image-container"><img src="${escapeAttr(imageData)}" alt="AI Generated Image" class="ai-generated-image" loading="lazy" onclick="window.open(this.src, '_blank')" /><span class="image-caption">Click to open full size</span></div>`;
+    } else {
+        // Base64
+        const src = `data:${mimeType || 'image/png'};base64,${imageData}`;
+        return `<div class="ai-image-container"><img src="${src}" alt="AI Generated Image" class="ai-generated-image" onclick="window.open(this.src, '_blank')" /><span class="image-caption">Click to open full size</span></div>`;
+    }
+}
+
+// Check if a model is a reasoning model that needs special params
+function isReasoningModel(modelId) {
+    const reasoningModels = ['o1', 'o1-mini', 'o1-preview', 'o3', 'o3-mini', 'o3-mini-high'];
+    return reasoningModels.includes(modelId);
+}
+
+function isThinkingModel(modelId) {
+    return modelId.includes('thinking');
 }
 
 // ---- Input Handling ----
@@ -492,6 +687,17 @@ function handleKeydown(e) {
 async function sendMessage() {
     const content = els.messageInput.value.trim();
     if (!content || state.isGenerating) return;
+
+    // Validate provider has API key
+    const providerKeys = state.providerKeys[state.provider];
+    if (!providerKeys || !providerKeys.enabled) {
+        showToast(`${PROVIDERS[state.provider].name} is not enabled. Configure it in Settings.`, 'error');
+        return;
+    }
+    if (!providerKeys.apiKey) {
+        showToast(`No API key configured for ${PROVIDERS[state.provider].name}. Add one in Settings.`, 'error');
+        return;
+    }
 
     // Create conversation if new
     if (!state.activeConversationId) {
@@ -523,6 +729,7 @@ async function sendMessage() {
         id: 'msg-' + (Date.now() + 1),
         role: 'assistant',
         content: '',
+        model: state.model,
         timestamp: new Date().toISOString(),
     };
 
@@ -535,103 +742,59 @@ async function sendMessage() {
 
     try {
         const provider = PROVIDERS[state.provider];
-        let baseUrl = (state.settings.baseUrl || provider.baseUrl).replace(/\/$/, "");
-        const authToken = state.settings.authToken || provider.authToken;
-
-        if (!authToken || authToken.includes('***')) {
-            throw new Error('Please configure a valid API key in Settings (remove the *** placeholder).');
-        }
+        const keys = state.providerKeys[state.provider];
+        let baseUrl = (keys.baseUrl || provider.baseUrl).replace(/\/$/, "");
+        const authToken = keys.apiKey;
 
         const systemPrompt = state.settings.systemPrompt;
-        const apiMessages = [];
-
-        // OpenAI format puts system prompt in messages array
-        if (systemPrompt) {
-            apiMessages.push({ role: 'system', content: systemPrompt });
-        }
-
-        state.messages.forEach(m => {
-            apiMessages.push({ role: m.role, content: m.content });
-        });
-
         const temperature = parseFloat(els.tempSlider.value) / 100;
         const maxTokens = parseInt(els.maxTokens.value) || 4096;
 
         state.abortController = new AbortController();
+        state.activeReader = null;
 
-        // Convert base URL to standard OpenAI v1 compatibility if outdated
-        if (baseUrl.includes('/cliproxy-api/api/provider/agy')) {
-            baseUrl = 'https://api.orbit-provider.com/v1';
-        }
-
-        const endpoint = `${baseUrl}/chat/completions`;
-
-        // Routing through LOCAL or VERCEL PROXY
-        const proxyUrl = '/proxy';
-
-        const response = await fetch(proxyUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                endpoint,
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                },
-                body: {
-                    model: state.model,
-                    max_tokens: maxTokens,
-                    temperature,
-                    messages: apiMessages,
-                    stream: state.settings.stream,
-                }
-            }),
-            signal: state.abortController.signal,
-        });
-
-        if (!response.ok) {
-            const errBody = await response.text();
-            console.error('Response error body:', errBody);
-            throw new Error(`API ${response.status}: ${errBody || response.statusText}`);
-        }
-
-        if (state.settings.stream) {
-            await handleStreamResponse(response, bodyEl, assistantMsg);
+        if (provider.apiFormat === 'gemini') {
+            // Google Gemini native API format
+            await callGeminiAPI(baseUrl, authToken, systemPrompt, temperature, maxTokens, bodyEl, assistantMsg);
         } else {
-            const data = await response.json();
-            const text = data.content?.[0]?.text || data.completion || data.choices?.[0]?.message?.content || '';
-            assistantMsg.content = text;
-            bodyEl.innerHTML = renderMarkdown(text);
+            // OpenAI-compatible format (Orbit, OpenAI)
+            await callOpenAICompatibleAPI(baseUrl, authToken, systemPrompt, temperature, maxTokens, provider.useProxy, bodyEl, assistantMsg);
         }
 
     } catch (err) {
         if (err.name === 'AbortError') {
-            bodyEl.innerHTML += `<div class="error-message">⏹ Generation stopped by user</div>`;
+            // Preserve any partial content already rendered
+            const partial = assistantMsg.content;
+            if (partial) {
+                bodyEl.innerHTML = renderMarkdown(partial) + `<div class="error-message" style="margin-top:12px">⏹ Generation stopped by user</div>`;
+            } else {
+                bodyEl.innerHTML = `<div class="error-message">⏹ Generation stopped by user</div>`;
+            }
         } else {
-            console.error('Detailed Catch Error:', err);
-
+            console.error('API Error:', err);
             let errorDetail = err.message;
             if (err.message === 'Failed to fetch') {
-                errorDetail = 'Failed to fetch: This is likely a CORS issue or the API endpoint is unreachable. Please check if the API supports browser requests or if you need to bypass CORS.';
+                errorDetail = 'Network error: The API endpoint may be unreachable. Make sure the proxy server is running (node server.js).';
             }
-
+            // Parse API error for better messaging
+            try {
+                const parsed = JSON.parse(err.message.replace(/^API \d+: /, ''));
+                if (parsed.error?.message) errorDetail = parsed.error.message;
+            } catch { }
             bodyEl.innerHTML = `<div class="error-message">
                 <strong>Error:</strong> ${escapeHtml(errorDetail)}
-                <br><small style="opacity: 0.7; margin-top: 5px; display: block;">Check Browser Console (F12) for more details.</small>
+                <small style="opacity:0.7;margin-top:4px;display:block;">Check Browser Console (F12) for details.</small>
             </div>`;
-            showToast('Connection failed', 'error');
+            showToast('Request failed', 'error');
         }
     } finally {
         state.isGenerating = false;
         state.abortController = null;
+        state.activeReader = null;
         els.sendBtn.classList.remove('hidden');
         els.stopBtn.classList.add('hidden');
         els.sendBtn.disabled = els.messageInput.value.trim().length === 0;
 
-        // Save
         if (assistantMsg.content) {
             state.messages.push(assistantMsg);
         }
@@ -640,70 +803,324 @@ async function sendMessage() {
     }
 }
 
+// ---- OpenAI-Compatible API (Orbit + OpenAI) ----
+async function callOpenAICompatibleAPI(baseUrl, authToken, systemPrompt, temperature, maxTokens, useProxy, bodyEl, assistantMsg) {
+    const apiMessages = [];
+    const reasoning = isReasoningModel(state.model);
+    const thinking = isThinkingModel(state.model);
+
+    // Reasoning models (o1, o3) don't support system messages — prepend as user context
+    if (systemPrompt && !reasoning) {
+        apiMessages.push({ role: 'system', content: systemPrompt });
+    } else if (systemPrompt && reasoning) {
+        apiMessages.push({ role: 'user', content: `[System Instructions]: ${systemPrompt}` });
+    }
+
+    state.messages.forEach(m => {
+        apiMessages.push({ role: m.role, content: m.content });
+    });
+
+    const endpoint = `${baseUrl}/chat/completions`;
+
+    // Build request body based on model type
+    const requestBody = {
+        model: state.model,
+        messages: apiMessages,
+    };
+
+    if (reasoning) {
+        // Reasoning models: no temperature, no stream, use max_completion_tokens
+        requestBody.max_completion_tokens = maxTokens;
+        requestBody.stream = false;
+    } else if (thinking) {
+        // Thinking models: limited params, may not support streaming well
+        requestBody.max_tokens = maxTokens;
+        requestBody.stream = state.settings.stream;
+    } else {
+        // Standard models: full param support
+        requestBody.max_tokens = maxTokens;
+        requestBody.temperature = temperature;
+        requestBody.stream = state.settings.stream;
+    }
+
+    let response;
+
+    if (useProxy) {
+        const proxyUrl = '/proxy';
+        response = await fetch(proxyUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                endpoint,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: requestBody
+            }),
+            signal: state.abortController.signal,
+        });
+    } else {
+        response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(requestBody),
+            signal: state.abortController.signal,
+        });
+    }
+
+    if (!response.ok) {
+        const errBody = await response.text();
+        console.error('Response error:', errBody);
+        throw new Error(`API ${response.status}: ${errBody || response.statusText}`);
+    }
+
+    // Reasoning models or non-stream: parse JSON response
+    const shouldStream = requestBody.stream;
+
+    if (shouldStream) {
+        await handleStreamResponse(response, bodyEl, assistantMsg);
+    } else {
+        const data = await response.json();
+        const text = data.choices?.[0]?.message?.content || data.content?.[0]?.text || '';
+        assistantMsg.content = text;
+        bodyEl.innerHTML = renderMarkdown(text);
+    }
+}
+
+// ---- Google Gemini Native API ----
+async function callGeminiAPI(baseUrl, authToken, systemPrompt, temperature, maxTokens, bodyEl, assistantMsg) {
+    const contents = [];
+
+    // Add conversation history (texts only, skip image parts for history)
+    state.messages.forEach(m => {
+        if (m.content) {
+            contents.push({
+                role: m.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: m.content }]
+            });
+        }
+    });
+
+    const requestBody = {
+        contents,
+        generationConfig: {
+            temperature,
+            maxOutputTokens: maxTokens,
+        }
+    };
+
+    if (systemPrompt) {
+        requestBody.systemInstruction = { parts: [{ text: systemPrompt }] };
+    }
+
+    const endpoint = state.settings.stream
+        ? `${baseUrl}/models/${state.model}:streamGenerateContent?alt=sse&key=${authToken}`
+        : `${baseUrl}/models/${state.model}:generateContent?key=${authToken}`;
+
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+        signal: state.abortController.signal,
+    });
+
+    if (!response.ok) {
+        const errBody = await response.text();
+        console.error('Gemini error:', errBody);
+        // Try to extract useful error message
+        let errMsg = `Gemini API ${response.status}`;
+        try {
+            const errJson = JSON.parse(errBody);
+            if (errJson.error?.message) errMsg = errJson.error.message;
+        } catch { errMsg += ': ' + (errBody || response.statusText); }
+        throw new Error(errMsg);
+    }
+
+    if (state.settings.stream) {
+        await handleGeminiStream(response, bodyEl, assistantMsg);
+    } else {
+        const data = await response.json();
+        let resultHtml = '';
+        let textContent = '';
+        const parts = data.candidates?.[0]?.content?.parts || [];
+        for (const part of parts) {
+            if (part.text) {
+                textContent += part.text;
+            } else if (part.inlineData) {
+                // Handle image responses
+                resultHtml += renderImageContent(part.inlineData.data, part.inlineData.mimeType);
+            }
+        }
+        assistantMsg.content = textContent;
+        bodyEl.innerHTML = renderMarkdown(textContent) + resultHtml;
+    }
+}
+
+// ---- Stream Handler (OpenAI format) ----
 async function handleStreamResponse(response, bodyEl, assistantMsg) {
     const reader = response.body.getReader();
+    state.activeReader = reader; // Track for cancellation
     const decoder = new TextDecoder();
     let buffer = '';
     let fullText = '';
+    let renderTimer = null;
+    let needsRender = false;
 
     bodyEl.innerHTML = '';
 
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-            if (line.startsWith('data: ')) {
-                const data = line.slice(6).trim();
-                if (data === '[DONE]') continue;
-
-                try {
-                    const parsed = JSON.parse(data);
-
-                    // Handle different SSE event types
-                    if (parsed.type === 'content_block_delta') {
-                        const text = parsed.delta?.text || '';
-                        fullText += text;
-                        assistantMsg.content = fullText;
-                        bodyEl.innerHTML = renderMarkdown(fullText);
-                        scrollToBottom();
-                    } else if (parsed.type === 'message_delta') {
-                        // End of message, could contain usage info
-                        if (parsed.usage) {
-                            updateTokenCount(parsed.usage.output_tokens);
-                        }
-                    } else if (parsed.delta?.text) {
-                        // Fallback for simpler SSE formats
-                        fullText += parsed.delta.text;
-                        assistantMsg.content = fullText;
-                        bodyEl.innerHTML = renderMarkdown(fullText);
-                        scrollToBottom();
-                    } else if (parsed.choices) {
-                        // OpenAI-compatible format
-                        const text = parsed.choices[0]?.delta?.content || '';
-                        fullText += text;
-                        assistantMsg.content = fullText;
-                        bodyEl.innerHTML = renderMarkdown(fullText);
-                        scrollToBottom();
-                    }
-                } catch {
-                    // Skip non-JSON lines
+    // Throttled render: batch DOM updates for performance
+    function scheduleRender() {
+        needsRender = true;
+        if (!renderTimer) {
+            renderTimer = requestAnimationFrame(() => {
+                if (needsRender) {
+                    bodyEl.innerHTML = renderMarkdown(fullText);
+                    scrollToBottom();
+                    needsRender = false;
                 }
-            }
+                renderTimer = null;
+            });
         }
     }
 
-    // Final render
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    const data = line.slice(6).trim();
+                    if (data === '[DONE]') continue;
+
+                    try {
+                        const parsed = JSON.parse(data);
+
+                        if (parsed.choices) {
+                            const delta = parsed.choices[0]?.delta;
+                            if (delta?.content) {
+                                fullText += delta.content;
+                            }
+                        } else if (parsed.type === 'content_block_delta') {
+                            fullText += parsed.delta?.text || '';
+                        } else if (parsed.delta?.text) {
+                            fullText += parsed.delta.text;
+                        }
+
+                        assistantMsg.content = fullText;
+                        scheduleRender();
+                    } catch {
+                        // Skip non-JSON lines
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        if (err.name !== 'AbortError') throw err;
+    } finally {
+        if (renderTimer) cancelAnimationFrame(renderTimer);
+        state.activeReader = null;
+    }
+
+    // Final render with full content
     if (fullText) {
         bodyEl.innerHTML = renderMarkdown(fullText);
+        scrollToBottom();
+    }
+}
+
+// ---- Stream Handler (Gemini SSE format) ----
+async function handleGeminiStream(response, bodyEl, assistantMsg) {
+    const reader = response.body.getReader();
+    state.activeReader = reader; // Track for cancellation
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let fullText = '';
+    let imageHtml = '';
+    let renderTimer = null;
+    let needsRender = false;
+
+    bodyEl.innerHTML = '';
+
+    function scheduleRender() {
+        needsRender = true;
+        if (!renderTimer) {
+            renderTimer = requestAnimationFrame(() => {
+                if (needsRender) {
+                    bodyEl.innerHTML = renderMarkdown(fullText) + imageHtml;
+                    scrollToBottom();
+                    needsRender = false;
+                }
+                renderTimer = null;
+            });
+        }
+    }
+
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    const data = line.slice(6).trim();
+                    if (!data) continue;
+
+                    try {
+                        const parsed = JSON.parse(data);
+                        const parts = parsed.candidates?.[0]?.content?.parts;
+                        if (parts) {
+                            parts.forEach(p => {
+                                if (p.text) {
+                                    fullText += p.text;
+                                } else if (p.inlineData) {
+                                    // Image chunk from Gemini
+                                    imageHtml += renderImageContent(p.inlineData.data, p.inlineData.mimeType);
+                                }
+                            });
+                        }
+
+                        assistantMsg.content = fullText;
+                        scheduleRender();
+                    } catch {
+                        // Skip
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        if (err.name !== 'AbortError') throw err;
+    } finally {
+        if (renderTimer) cancelAnimationFrame(renderTimer);
+        state.activeReader = null;
+    }
+
+    if (fullText || imageHtml) {
+        bodyEl.innerHTML = renderMarkdown(fullText) + imageHtml;
+        scrollToBottom();
     }
 }
 
 function stopGeneration() {
+    // Cancel the active stream reader first for immediate stop
+    if (state.activeReader) {
+        try { state.activeReader.cancel(); } catch { }
+        state.activeReader = null;
+    }
+    // Then abort the fetch
     if (state.abortController) {
         state.abortController.abort();
     }
@@ -711,7 +1128,6 @@ function stopGeneration() {
 
 // ---- Token Counter ----
 function updateTokenCount(additionalTokens) {
-    // Rough estimation: ~4 chars per token
     const totalChars = state.messages.reduce((sum, m) => sum + (m.content?.length || 0), 0);
     const estimated = Math.ceil(totalChars / 4) + (additionalTokens || 0);
     els.tokenCount.textContent = `~${estimated.toLocaleString()} tokens`;
@@ -719,11 +1135,30 @@ function updateTokenCount(additionalTokens) {
 
 // ---- Settings ----
 function loadSettings() {
-    els.settingBaseUrl.value = state.settings.baseUrl;
-    els.settingAuthToken.value = state.settings.authToken;
-    els.settingSystemPrompt.value = state.settings.systemPrompt;
+    els.settingSystemPrompt.value = state.settings.systemPrompt || '';
     els.settingStream.checked = state.settings.stream;
     els.settingTokens.checked = state.settings.showTokens;
+
+    // Load provider keys
+    const orbitKeys = state.providerKeys.orbit;
+    $('#settingOrbitBaseUrl').value = orbitKeys.baseUrl || '';
+    $('#settingOrbitKey').value = orbitKeys.apiKey || '';
+    $('#settingOrbitEnabled').checked = orbitKeys.enabled;
+
+    const openaiKeys = state.providerKeys.openai;
+    $('#settingOpenAIBaseUrl').value = openaiKeys.baseUrl || '';
+    $('#settingOpenAIKey').value = openaiKeys.apiKey || '';
+    $('#settingOpenAIEnabled').checked = openaiKeys.enabled;
+
+    const geminiKeys = state.providerKeys['gemini-direct'];
+    $('#settingGeminiBaseUrl').value = geminiKeys.baseUrl || '';
+    $('#settingGeminiKey').value = geminiKeys.apiKey || '';
+    $('#settingGeminiEnabled').checked = geminiKeys.enabled;
+
+    const groqKeys = state.providerKeys.groq || { enabled: false, baseUrl: '', apiKey: '' };
+    $('#settingGroqBaseUrl').value = groqKeys.baseUrl || '';
+    $('#settingGroqKey').value = groqKeys.apiKey || '';
+    $('#settingGroqEnabled').checked = groqKeys.enabled;
 }
 
 function openSettings() {
@@ -736,27 +1171,88 @@ function closeSettings() {
 }
 
 function saveSettings() {
-    state.settings.baseUrl = els.settingBaseUrl.value.trim();
-    state.settings.authToken = els.settingAuthToken.value.trim();
+    // General
     state.settings.systemPrompt = els.settingSystemPrompt.value.trim();
     state.settings.stream = els.settingStream.checked;
     state.settings.showTokens = els.settingTokens.checked;
 
-    localStorage.setItem('orbit_settings', JSON.stringify(state.settings));
+    // Orbit
+    state.providerKeys.orbit = {
+        baseUrl: $('#settingOrbitBaseUrl').value.trim() || 'https://api.orbit-provider.com/v1',
+        apiKey: $('#settingOrbitKey').value.trim(),
+        enabled: $('#settingOrbitEnabled').checked,
+    };
+
+    // OpenAI
+    state.providerKeys.openai = {
+        baseUrl: $('#settingOpenAIBaseUrl').value.trim() || 'https://api.openai.com/v1',
+        apiKey: $('#settingOpenAIKey').value.trim(),
+        enabled: $('#settingOpenAIEnabled').checked,
+    };
+
+    // Gemini Direct
+    state.providerKeys['gemini-direct'] = {
+        baseUrl: $('#settingGeminiBaseUrl').value.trim() || 'https://generativelanguage.googleapis.com/v1beta',
+        apiKey: $('#settingGeminiKey').value.trim(),
+        enabled: $('#settingGeminiEnabled').checked,
+    };
+
+    // Groq
+    state.providerKeys.groq = {
+        baseUrl: $('#settingGroqBaseUrl').value.trim() || 'https://api.groq.com/openai/v1',
+        apiKey: $('#settingGroqKey').value.trim(),
+        enabled: $('#settingGroqEnabled').checked,
+    };
+
+    // Persist
+    localStorage.setItem('hai_settings', JSON.stringify(state.settings));
+    localStorage.setItem('hai_provider_keys', JSON.stringify(state.providerKeys));
+
+    // Ensure current provider is still enabled
+    if (!state.providerKeys[state.provider]?.enabled) {
+        // Switch to first enabled provider
+        const firstEnabled = Object.keys(PROVIDERS).find(k => state.providerKeys[k]?.enabled);
+        if (firstEnabled) {
+            switchProvider(firstEnabled);
+        }
+    }
+
+    renderProviderTabs();
+    renderWelcomeProviderCards();
+    applyProviderTheme();
     updateUI();
     closeSettings();
     showToast('Settings saved!', 'success');
 }
 
 function resetSettings() {
-    const defaults = {
-        baseUrl: PROVIDERS[state.provider].baseUrl,
-        authToken: PROVIDERS[state.provider].authToken,
+    state.settings = {
         systemPrompt: 'You are a helpful, knowledgeable, and friendly AI assistant. Provide clear, accurate, and well-structured responses. Use markdown formatting when helpful.',
         stream: true,
         showTokens: true,
     };
-    state.settings = defaults;
+    state.providerKeys = {
+        orbit: {
+            baseUrl: 'https://api.orbit-provider.com/v1',
+            apiKey: PROVIDERS.orbit.authToken,
+            enabled: true,
+        },
+        openai: {
+            baseUrl: 'https://api.openai.com/v1',
+            apiKey: '',
+            enabled: false,
+        },
+        'gemini-direct': {
+            baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+            apiKey: '',
+            enabled: false,
+        },
+        groq: {
+            baseUrl: 'https://api.groq.com/openai/v1',
+            apiKey: '',
+            enabled: false,
+        }
+    };
     loadSettings();
     showToast('Settings reset to defaults', 'info');
 }
@@ -808,7 +1304,7 @@ function showToast(message, type = 'info') {
     setTimeout(() => {
         toast.style.animation = 'toastOut 300ms ease-in forwards';
         setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, 3500);
 }
 
 // ---- Utilities ----
