@@ -240,22 +240,11 @@ function renderProviderTabs() {
 }
 
 function renderWelcomeProviderCards() {
-    const cardsHtml = Object.keys(PROVIDERS).map(key => {
-        const p = PROVIDERS[key];
-        const isEnabled = state.providerKeys[key]?.enabled;
-        const statusClass = isEnabled ? 'active' : 'disabled';
-        const statusText = isEnabled ? 'Active' : 'Not configured';
-        const cardClass = key === 'orbit' ? 'orbit-card' : key === 'openai' ? 'openai-card' : 'gemini-card';
-        return `
-            <div class="provider-card ${cardClass}">
-                <span class="pc-dot"></span>
-                <span>${p.name}</span>
-                <span class="pc-status">${statusText}</span>
-            </div>
-        `;
-    }).join('');
-
-    els.welcomeProviderCards.innerHTML = cardsHtml;
+    // Provider status cards removed from homepage per design update
+    // Cards are no longer displayed on the welcome screen
+    if (els.welcomeProviderCards) {
+        els.welcomeProviderCards.style.display = 'none';
+    }
 }
 
 // ---- Event Listeners ----
@@ -445,25 +434,8 @@ function newChat() {
     const welcome = els.messagesInner.querySelector('.welcome-screen');
     if (welcome) {
         welcome.style.display = 'flex';
-        // Re-render provider cards
-        const cardsContainer = welcome.querySelector('#welcomeProviderCards') || welcome.querySelector('.provider-cards');
-        if (cardsContainer) {
-            const cardsHtml = Object.keys(PROVIDERS).map(key => {
-                const p = PROVIDERS[key];
-                const isEnabled = state.providerKeys[key]?.enabled;
-                const statusText = isEnabled ? 'Active' : 'Not configured';
-                const cardClass = key === 'orbit' ? 'orbit-card' : key === 'openai' ? 'openai-card' : 'gemini-card';
-                return `
-                    <div class="provider-card ${cardClass}">
-                        <span class="pc-dot"></span>
-                        <span>${p.name}</span>
-                        <span class="pc-status">${statusText}</span>
-                    </div>
-                `;
-            }).join('');
-            cardsContainer.innerHTML = cardsHtml;
-        }
 
+        // Re-attach quick prompt listeners
         welcome.querySelectorAll('.quick-prompt').forEach(btn => {
             btn.addEventListener('click', () => {
                 els.messageInput.value = btn.dataset.prompt;
@@ -622,10 +594,11 @@ function appendMessageToDOM(msg) {
         <div class="message-content">
             <div class="message-header">
                 <span class="message-role">${msg.role === 'user' ? 'You' : 'Himanshu AI'}</span>
-                ${modelTag}
                 <span class="message-time">${time}</span>
             </div>
-            <div class="message-body">${msg.role === 'user' ? escapeHtml(msg.content).replace(/\n/g, '<br>') : renderMarkdown(msg.content)}</div>
+            <div class="message-bubble">
+                <div class="message-body">${msg.role === 'user' ? escapeHtml(msg.content).replace(/\n/g, '<br>') : renderMarkdown(msg.content)}</div>
+            </div>
             <div class="message-actions">
                 <button class="msg-action-btn" onclick="copyMessageContent(this)" data-content="${escapeAttr(msg.content)}">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

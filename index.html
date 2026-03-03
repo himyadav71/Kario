@@ -100,6 +100,21 @@
                     </svg>
                 </button>
 
+                <!-- Center logo for mobile -->
+                <div class="header-logo-center">
+                    <div class="header-logo-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"
+                                stroke-linejoin="round" />
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2"
+                                stroke-linejoin="round" />
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <span class="header-logo-text">Himanshu AI</span>
+                </div>
+
                 <!-- Provider Tabs -->
                 <div class="header-selectors">
                     <div class="provider-tabs" id="providerTabs">
@@ -134,8 +149,9 @@
                 <div class="messages-inner" id="messagesInner">
                     <!-- Welcome Screen -->
                     <div class="welcome-screen" id="welcomeScreen">
+                        <div class="welcome-glow"></div>
                         <div class="welcome-icon">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
                                 <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#wg1)" stroke-width="1.5"
                                     stroke-linejoin="round" />
                                 <path d="M2 17L12 22L22 17" stroke="url(#wg2)" stroke-width="1.5"
@@ -158,11 +174,8 @@
                                 </defs>
                             </svg>
                         </div>
-                        <h2>Welcome to Himanshu AI</h2>
-                        <p>Multi-provider AI assistant — Orbit · OpenAI · Google Gemini · Groq</p>
-                        <div class="provider-cards" id="welcomeProviderCards">
-                            <!-- Populated by JS -->
-                        </div>
+                        <h2>How can I help you today?</h2>
+                        <p>Your intelligent companion — ask me anything</p>
                         <div class="quick-prompts">
                             <button class="quick-prompt" data-prompt="Explain quantum computing in simple terms">
                                 <span class="qp-icon">🔬</span>
@@ -175,12 +188,12 @@
                             </button>
                             <button class="quick-prompt" data-prompt="Compare REST vs GraphQL APIs with pros and cons">
                                 <span class="qp-icon">⚡</span>
-                                <span>REST vs GraphQL comparison</span>
+                                <span>REST vs GraphQL APIs</span>
                             </button>
                             <button class="quick-prompt"
                                 data-prompt="Create a creative short story about an AI becoming self-aware">
                                 <span class="qp-icon">✍️</span>
-                                <span>Creative AI short story</span>
+                                <span>Write a creative story</span>
                             </button>
                         </div>
                     </div>
