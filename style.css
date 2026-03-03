@@ -2207,7 +2207,7 @@ body[data-provider="groq"] .message.assistant .message-avatar {
     }
 
     .header-actions {
-        margin-left: 0;
+        margin-left: auto;
     }
 
     .quick-prompts {
@@ -2315,6 +2315,10 @@ body[data-provider="groq"] .message.assistant .message-avatar {
     }
 
     .active-provider-badge {
+        display: none;
+    }
+
+    .token-counter {
         display: none;
     }
 
