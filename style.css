@@ -1121,6 +1121,7 @@ body[data-provider="groq"] .message.assistant .message-avatar {
     width: 80px;
     height: 4px;
     -webkit-appearance: none;
+    appearance: none;
     background: var(--border-secondary);
     border-radius: 2px;
     outline: none;
@@ -1128,6 +1129,7 @@ body[data-provider="groq"] .message.assistant .message-avatar {
 
 .param-group input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
+    appearance: none;
     width: 14px;
     height: 14px;
     border-radius: 50%;
