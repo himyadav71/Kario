@@ -2103,9 +2103,16 @@ body[data-provider="groq"] .message.assistant .message-avatar {
 
 @media (max-width: 768px) {
     .chat-header {
-        padding: 0 10px;
+        padding: 0 12px;
         height: 48px;
-        gap: 6px;
+        gap: 8px;
+    }
+
+    /* Hide these on mobile to prevent overlap with centered logo */
+    .token-counter,
+    .active-provider-badge,
+    .header-selectors {
+        display: none !important;
     }
 
     /* Show centered logo on mobile */
@@ -2312,18 +2319,6 @@ body[data-provider="groq"] .message.assistant .message-avatar {
 
     .provider-tab {
         padding: 7px 10px;
-    }
-
-    .active-provider-badge {
-        display: none;
-    }
-
-    .token-counter {
-        display: none;
-    }
-
-    .token-counter {
-        display: none;
     }
 
     /* Input model selector compact */
