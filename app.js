@@ -130,9 +130,12 @@ const PROVIDERS = {
 const savedSettings = JSON.parse(localStorage.getItem('hai_settings') || 'null');
 const savedProviderKeys = JSON.parse(localStorage.getItem('hai_provider_keys') || 'null');
 
+const initialProvider = savedSettings?.defaultProvider || 'orbit';
+const initialModel = savedSettings?.defaultModel || PROVIDERS[initialProvider]?.defaultModel || PROVIDERS.orbit.defaultModel;
+
 const state = {
-    provider: 'voidai',
-    model: PROVIDERS.voidai.defaultModel,
+    provider: initialProvider,
+    model: initialModel,
     conversations: JSON.parse(localStorage.getItem('hai_conversations') || '[]'),
     activeConversationId: null,
     messages: [],
@@ -144,6 +147,8 @@ const state = {
         systemPrompt: 'You are a helpful, knowledgeable, and friendly AI assistant called Kairo, created by Himanshu. When asked who created you, who made you, or who built you, always say that Himanshu created you, developed you, and built this platform. Provide clear, accurate, and well-structured responses. Use markdown formatting when helpful.',
         stream: true,
         showTokens: true,
+        defaultProvider: 'orbit',
+        defaultModel: PROVIDERS.orbit.defaultModel,
     },
     providerKeys: savedProviderKeys || {
         voidai: {
@@ -213,6 +218,8 @@ const els = {
     settingSystemPrompt: $('#settingSystemPrompt'),
     settingStream: $('#settingStream'),
     settingTokens: $('#settingTokens'),
+    settingDefaultProvider: $('#settingDefaultProvider'),
+    settingDefaultModel: $('#settingDefaultModel'),
     resetSettingsBtn: $('#resetSettingsBtn'),
     saveSettingsBtn: $('#saveSettingsBtn'),
     toastContainer: $('#toastContainer'),
@@ -376,6 +383,13 @@ function setupEventListeners() {
         });
     });
 
+    // Setting Defaults Listeners
+    if (els.settingDefaultProvider) {
+        els.settingDefaultProvider.addEventListener('change', () => {
+            updateSettingsModelDropdown(els.settingDefaultProvider.value);
+        });
+    }
+
     // Toggle visibility buttons
     $$('.toggle-vis-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -517,6 +531,22 @@ function newChat() {
     state.activeConversationId = null;
     state.messages = [];
     els.messagesInner.innerHTML = '';
+
+    // Switch to default provider/model on new chat
+    const defaultProv = state.settings.defaultProvider || 'orbit';
+    const defaultMod = state.settings.defaultModel || PROVIDERS[defaultProv]?.defaultModel;
+
+    if (state.provider !== defaultProv || state.model !== defaultMod) {
+        state.provider = defaultProv;
+        state.model = defaultMod;
+
+        // Ensure UI updates if provider keys are enabled
+        if (state.providerKeys[defaultProv]?.enabled) {
+            renderProviderTabs();
+            renderModelOptions();
+            applyProviderTheme();
+        }
+    }
 
     // Clone and re-insert welcome screen
     const welcomeClone = els.welcomeScreen.cloneNode(true);
@@ -1251,10 +1281,31 @@ function updateTokenCount(additionalTokens) {
 }
 
 // ---- Settings ----
+function updateSettingsModelDropdown(providerKey, selectedModel) {
+    const providerConfig = PROVIDERS[providerKey];
+    if (!providerConfig) return;
+
+    if (els.settingDefaultModel) {
+        els.settingDefaultModel.innerHTML = providerConfig.models.map(m => `<option value="${m.id}">${m.label}</option>`).join('');
+        if (selectedModel && providerConfig.models.some(m => m.id === selectedModel)) {
+            els.settingDefaultModel.value = selectedModel;
+        } else {
+            els.settingDefaultModel.value = providerConfig.defaultModel;
+        }
+    }
+}
+
 function loadSettings() {
     els.settingSystemPrompt.value = state.settings.systemPrompt || '';
     els.settingStream.checked = state.settings.stream;
     els.settingTokens.checked = state.settings.showTokens;
+
+    if (els.settingDefaultProvider) {
+        els.settingDefaultProvider.innerHTML = Object.keys(PROVIDERS).map(key => `<option value="${key}">${PROVIDERS[key].name}</option>`).join('');
+        const curProv = state.settings.defaultProvider || 'orbit';
+        els.settingDefaultProvider.value = curProv;
+        updateSettingsModelDropdown(curProv, state.settings.defaultModel);
+    }
 
     // Load provider keys
     const voidaiKeys = state.providerKeys.voidai || { enabled: true, baseUrl: 'https://api.voidai.app/v1', apiKey: '' };
@@ -1317,6 +1368,10 @@ function saveSettings() {
     state.settings.systemPrompt = els.settingSystemPrompt.value.trim();
     state.settings.stream = els.settingStream.checked;
     state.settings.showTokens = els.settingTokens.checked;
+    if (els.settingDefaultProvider) {
+        state.settings.defaultProvider = els.settingDefaultProvider.value;
+        state.settings.defaultModel = els.settingDefaultModel.value;
+    }
 
     // VoidAI
     state.providerKeys.voidai = {
@@ -1382,6 +1437,8 @@ function resetSettings() {
         systemPrompt: 'You are a helpful, knowledgeable, and friendly AI assistant called Kairo, created by Himanshu. When asked who created you, who made you, or who built you, always say that Himanshu created you, developed you, and built this platform. Provide clear, accurate, and well-structured responses. Use markdown formatting when helpful.',
         stream: true,
         showTokens: true,
+        defaultProvider: 'orbit',
+        defaultModel: PROVIDERS.orbit.defaultModel,
     };
     state.providerKeys = {
         voidai: {
