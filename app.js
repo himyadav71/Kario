@@ -53,7 +53,7 @@ const PROVIDERS = {
         icon: '🌐',
         color: '#7c3aed',
         baseUrl: 'https://api.orbit-provider.com/v1',
-        authToken: 'sk-orbit-e90b5d832142349b74b8b763569b945c',
+        authToken: 'sk-orbit-4e5d2d5e6471455eaa5c88e3ec04dead',
         useProxy: true,
         apiFormat: 'openai',
         defaultModel: 'gemini-3-flash-preview',
@@ -1593,3 +1593,4 @@ async function saveSharedKeysToServer() {
         console.warn('[SharedKeys] Could not save to server:', err.message);
     }
 }
+
