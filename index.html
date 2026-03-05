@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Himanshu AI — Multi-Model Chat Interface</title>
+    <title>Kairo — Multi-Model Chat Interface</title>
     <meta name="description"
-        content="A premium AI chat interface supporting Orbit, OpenAI, and Google Gemini models with unified API access.">
+        content="Kairo — A premium AI chat interface supporting multiple AI providers with unified API access.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -41,7 +41,7 @@
                                 stroke-linejoin="round" />
                         </svg>
                     </div>
-                    <span class="logo-text">Himanshu AI</span>
+                    <span class="logo-text">Kairo</span>
                 </div>
                 <div class="sidebar-header-actions">
                     <button class="btn-icon" id="newChatBtn" title="New Chat">
@@ -112,7 +112,7 @@
                                 stroke-linejoin="round" />
                         </svg>
                     </div>
-                    <span class="header-logo-text">Himanshu AI</span>
+                    <span class="header-logo-text">Kairo</span>
                 </div>
 
                 <!-- Provider Tabs -->
@@ -289,6 +289,7 @@
                     <!-- Settings Tabs -->
                     <div class="settings-tabs" id="settingsTabs">
                         <button class="settings-tab active" data-tab="general">General</button>
+                        <button class="settings-tab voidai-tab" data-tab="voidai">🔮 VoidAI</button>
                         <button class="settings-tab orbit-tab" data-tab="orbit">🌐 Orbit</button>
                         <button class="settings-tab openai-tab" data-tab="openai">🤖 OpenAI</button>
                         <button class="settings-tab gemini-tab" data-tab="gemini">✨ Gemini</button>
@@ -317,6 +318,47 @@
                                 <label>Show token counter</label>
                                 <label class="toggle">
                                     <input type="checkbox" id="settingTokens" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- VoidAI Tab -->
+                    <div class="settings-panel" id="panel-voidai">
+                        <div class="provider-settings-header voidai-theme">
+                            <div class="psh-icon">🔮</div>
+                            <div>
+                                <h3>VoidAI Gateway</h3>
+                                <p>Access 15+ AI providers through a single, unified API</p>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Base URL</label>
+                                <input type="url" id="settingVoidAIBaseUrl" class="setting-input"
+                                    placeholder="https://api.voidai.app/v1" value="https://api.voidai.app/v1">
+                            </div>
+                            <div class="setting-item">
+                                <label>API Key</label>
+                                <div class="token-input-wrap">
+                                    <input type="password" id="settingVoidAIKey" class="setting-input"
+                                        placeholder="sk-voidai-...">
+                                    <button class="btn-icon btn-sm toggle-vis-btn" data-target="settingVoidAIKey">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="setting-item toggle-item">
+                                <label>Enable VoidAI</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="settingVoidAIEnabled" checked>
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>

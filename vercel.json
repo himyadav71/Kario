@@ -4,6 +4,15 @@
         {
             "source": "/proxy",
             "destination": "/api/proxy"
+        },
+        {
+            "source": "/api/shared-keys/full",
+            "destination": "/api/shared-keys-full"
         }
-    ]
+    ],
+    "functions": {
+        "api/proxy.js": {
+            "maxDuration": 60
+        }
+    }
 }

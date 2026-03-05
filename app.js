@@ -1,9 +1,53 @@
 /* ============================================
-   Himanshu AI Chat — Multi-Provider Application
+   Kairo Chat — Multi-Provider Application
    ============================================ */
 
 // ---- Provider Configurations ----
 const PROVIDERS = {
+    voidai: {
+        name: 'VoidAI',
+        icon: '🔮',
+        color: '#8b5cf6',
+        baseUrl: 'https://api.voidai.app/v1',
+        authToken: 'sk-voidai-y7L7ncUV9FWHC-YixGOOV0Ary8iBu-TaKc68HNl-6ZoH-aa_bGi9zqTTi_ms0LVkfAJs_XB4WCLZ9zrx-1w72USI4DoJV0W6V30N8ITDDBd1yRwyo32iyHq06ICCesP-MCX4GQ',
+        useProxy: false,
+        apiFormat: 'openai',
+        defaultModel: 'gpt-4.1-mini',
+        categorized: true,
+        models: [
+            // OpenAI — Best & Latest
+            { id: 'gpt-5.2', label: 'GPT-5.2', desc: 'Latest flagship · Best reasoning', tier: 'opus', category: '🟢 OpenAI' },
+            { id: 'gpt-4.1', label: 'GPT-4.1', desc: 'Fast & capable · Great balance', tier: 'sonnet', category: '🟢 OpenAI' },
+            { id: 'gpt-4.1-mini', label: 'Kairo ⭐', desc: 'Best daily driver · Low cost', tier: 'haiku', category: '🟢 OpenAI' },
+            { id: 'o4-mini', label: 'o4 Mini', desc: 'Fast reasoning model', tier: 'sonnet', category: '🟢 OpenAI' },
+            { id: 'o3', label: 'o3', desc: 'Advanced reasoning · 200K ctx', tier: 'opus', category: '🟢 OpenAI' },
+            // Anthropic — Best & Latest
+            { id: 'claude-opus-4-6', label: 'Claude Opus 4.6', desc: 'Latest Anthropic flagship', tier: 'opus', category: '🟠 Anthropic' },
+            { id: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', desc: 'Balanced · Great for coding', tier: 'sonnet', category: '🟠 Anthropic' },
+            { id: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5', desc: 'Fast & lightweight', tier: 'haiku', category: '🟠 Anthropic' },
+            // Google — Best & Latest
+            { id: 'gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro', desc: 'Newest Gemini flagship', tier: 'opus', category: '🔵 Google' },
+            { id: 'gemini-3-flash-preview', label: 'Gemini 3 Flash', desc: 'Fast next-gen · Low cost', tier: 'sonnet', category: '🔵 Google' },
+            { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro', desc: 'Powerful · 1M context', tier: 'opus', category: '🔵 Google' },
+            // DeepSeek — Best & Latest
+            { id: 'deepseek-v3.2', label: 'DeepSeek V3.2', desc: 'Latest · Math & logic', tier: 'opus', category: '⚪ DeepSeek' },
+            { id: 'deepseek-r1', label: 'DeepSeek R1', desc: 'Reasoning specialist', tier: 'opus', category: '⚪ DeepSeek' },
+            // Grok — Best & Latest
+            { id: 'grok-4.1', label: 'Grok 4.1', desc: 'Latest xAI flagship', tier: 'opus', category: '� Grok' },
+            { id: 'grok-4.1-mini', label: 'Grok 4.1 Mini', desc: 'Lightweight & fast', tier: 'haiku', category: '� Grok' },
+            // Perplexity — Search Models
+            { id: 'sonar-pro', label: 'Sonar Pro', desc: 'Search-augmented AI', tier: 'opus', category: '🔍 Perplexity' },
+            { id: 'sonar-reasoning-pro', label: 'Sonar Reasoning Pro', desc: 'Deep search + reasoning', tier: 'opus', category: '🔍 Perplexity' },
+            // Mistral — Best
+            { id: 'mistral-large-latest', label: 'Mistral Large', desc: 'Multilingual flagship', tier: 'opus', category: '� Mistral' },
+            // Qwen — New
+            { id: 'qwen3-235b-a22b-instruct', label: 'Qwen3 235B', desc: 'Powerful open-source', tier: 'opus', category: '� Qwen' },
+            // Meta — New
+            { id: 'llama-4-maverick-17b-128e-instruct', label: 'Llama 4 Maverick', desc: 'Meta latest open model', tier: 'sonnet', category: '� Meta' },
+            // Kimi — New
+            { id: 'kimi-k2.5', label: 'Kimi K2.5', desc: 'Moonshot latest model', tier: 'sonnet', category: '🌙 Kimi' },
+        ]
+    },
     orbit: {
         name: 'Orbit',
         icon: '🌐',
@@ -87,20 +131,26 @@ const savedSettings = JSON.parse(localStorage.getItem('hai_settings') || 'null')
 const savedProviderKeys = JSON.parse(localStorage.getItem('hai_provider_keys') || 'null');
 
 const state = {
-    provider: 'orbit',
-    model: PROVIDERS.orbit.defaultModel,
+    provider: 'voidai',
+    model: PROVIDERS.voidai.defaultModel,
     conversations: JSON.parse(localStorage.getItem('hai_conversations') || '[]'),
     activeConversationId: null,
     messages: [],
     isGenerating: false,
     abortController: null,
     activeReader: null, // Track active stream reader for proper cancellation
+    sharedKeys: {}, // Server-side shared keys for all users
     settings: savedSettings || {
-        systemPrompt: 'You are a helpful, knowledgeable, and friendly AI assistant. Provide clear, accurate, and well-structured responses. Use markdown formatting when helpful.',
+        systemPrompt: 'You are a helpful, knowledgeable, and friendly AI assistant called Kairo, created by Himanshu. When asked who created you, who made you, or who built you, always say that Himanshu created you, developed you, and built this platform. Provide clear, accurate, and well-structured responses. Use markdown formatting when helpful.',
         stream: true,
         showTokens: true,
     },
     providerKeys: savedProviderKeys || {
+        voidai: {
+            baseUrl: 'https://api.voidai.app/v1',
+            apiKey: PROVIDERS.voidai.authToken,
+            enabled: true,
+        },
         orbit: {
             baseUrl: 'https://api.orbit-provider.com/v1',
             apiKey: PROVIDERS.orbit.authToken,
@@ -185,6 +235,7 @@ function init() {
     loadSettings();
     applyProviderTheme();
     updateUI();
+    loadSharedKeysFromServer(); // Load shared keys on startup
 }
 
 // ---- Markdown Setup ----
@@ -253,7 +304,7 @@ function setupEventListeners() {
     els.sidebarToggle.addEventListener('click', () => {
         els.sidebar.classList.toggle('open');
         els.sidebar.classList.toggle('closed');
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth <= 1024) {
             els.sidebarOverlay.classList.toggle('show');
         }
     });
@@ -271,6 +322,17 @@ function setupEventListeners() {
             els.sidebar.classList.add('closed');
         });
     }
+
+    // Close sidebar when clicking outside on mobile (max-width: 768px)
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth > 768) return;
+        if (!els.sidebar.classList.contains('open')) return;
+        if (els.sidebar.contains(e.target) || els.sidebarToggle.contains(e.target)) return;
+
+        els.sidebar.classList.remove('open');
+        els.sidebarOverlay.classList.remove('show');
+        els.sidebar.classList.add('closed');
+    });
 
     // New chat
     els.newChatBtn.addEventListener('click', newChat);
@@ -375,29 +437,58 @@ function applyProviderTheme() {
 }
 
 function renderModelOptions() {
-    const models = PROVIDERS[state.provider].models;
-
-    // Group by tier
-    const groups = { opus: [], sonnet: [], haiku: [] };
-    models.forEach(m => {
-        if (groups[m.tier]) groups[m.tier].push(m);
-    });
-
-    const tierNames = { opus: 'Flagship', sonnet: 'Balanced', haiku: 'Fast & Light' };
+    const providerConfig = PROVIDERS[state.provider];
+    const models = providerConfig.models;
 
     let html = '';
-    for (const tier of ['opus', 'sonnet', 'haiku']) {
-        if (groups[tier].length === 0) continue;
-        html += `<div class="select-group-label">${tierNames[tier]}</div>`;
-        html += groups[tier].map(m => `
-            <div class="select-option ${m.id === state.model ? 'active' : ''}" data-model="${m.id}">
-                <div class="option-info">
-                    <span class="option-label">${m.label}</span>
-                    <span class="option-desc">${m.desc}</span>
+
+    if (providerConfig.categorized) {
+        // Group by category (for VoidAI — shows provider groups)
+        const categories = [];
+        const categoryMap = {};
+        models.forEach(m => {
+            const cat = m.category || 'Other';
+            if (!categoryMap[cat]) {
+                categoryMap[cat] = [];
+                categories.push(cat);
+            }
+            categoryMap[cat].push(m);
+        });
+
+        for (const cat of categories) {
+            html += `<div class="select-group-label category-label">${cat}</div>`;
+            html += categoryMap[cat].map(m => `
+                <div class="select-option ${m.id === state.model ? 'active' : ''}" data-model="${m.id}">
+                    <div class="option-info">
+                        <span class="option-label">${m.label}</span>
+                        <span class="option-desc">${m.desc}</span>
+                    </div>
+                    <span class="option-tier ${m.tier}">${m.tier === 'opus' ? 'PRO' : m.tier === 'sonnet' ? 'STD' : 'LITE'}</span>
                 </div>
-                <span class="option-tier ${m.tier}">${m.tier === 'opus' ? 'PRO' : m.tier === 'sonnet' ? 'STD' : 'LITE'}</span>
-            </div>
-        `).join('');
+            `).join('');
+        }
+    } else {
+        // Group by tier (default for other providers)
+        const groups = { opus: [], sonnet: [], haiku: [] };
+        models.forEach(m => {
+            if (groups[m.tier]) groups[m.tier].push(m);
+        });
+
+        const tierNames = { opus: 'Flagship', sonnet: 'Balanced', haiku: 'Fast & Light' };
+
+        for (const tier of ['opus', 'sonnet', 'haiku']) {
+            if (groups[tier].length === 0) continue;
+            html += `<div class="select-group-label">${tierNames[tier]}</div>`;
+            html += groups[tier].map(m => `
+                <div class="select-option ${m.id === state.model ? 'active' : ''}" data-model="${m.id}">
+                    <div class="option-info">
+                        <span class="option-label">${m.label}</span>
+                        <span class="option-desc">${m.desc}</span>
+                    </div>
+                    <span class="option-tier ${m.tier}">${m.tier === 'opus' ? 'PRO' : m.tier === 'sonnet' ? 'STD' : 'LITE'}</span>
+                </div>
+            `).join('');
+        }
     }
 
     els.selectOptions.innerHTML = html;
@@ -529,9 +620,11 @@ function saveCurrentConversation() {
 
 function getProviderDotColor(providerKey) {
     const colors = {
+        'voidai': '#8b5cf6',
         'orbit': '#7c3aed',
         'openai': '#10a37f',
         'gemini-direct': '#4285f4',
+        'groq': '#f97316',
     };
     return colors[providerKey] || '#7c3aed';
 }
@@ -587,13 +680,13 @@ function appendMessageToDOM(msg) {
     div.id = msg.id || '';
 
     const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-    const modelTag = ''; // Hidden: only show "Himanshu AI"
+    const modelTag = ''; // Hidden: only show "Kairo"
 
     div.innerHTML = `
         <div class="message-avatar">${msg.role === 'user' ? 'U' : 'AI'}</div>
         <div class="message-content">
             <div class="message-header">
-                <span class="message-role">${msg.role === 'user' ? 'You' : 'Himanshu AI'}</span>
+                <span class="message-role">${msg.role === 'user' ? 'You' : 'Kairo'}</span>
                 <span class="message-time">${time}</span>
             </div>
             <div class="message-bubble">
@@ -639,7 +732,7 @@ function renderImageContent(imageData, mimeType) {
 
 // Check if a model is a reasoning model that needs special params
 function isReasoningModel(modelId) {
-    const reasoningModels = ['o1', 'o1-mini', 'o1-preview', 'o3', 'o3-mini', 'o3-mini-high'];
+    const reasoningModels = ['o1', 'o1-mini', 'o1-preview', 'o3', 'o3-mini', 'o3-mini-high', 'o4-mini', 'deepseek-r1'];
     return reasoningModels.includes(modelId);
 }
 
@@ -672,14 +765,14 @@ async function sendMessage() {
     const content = els.messageInput.value.trim();
     if (!content || state.isGenerating) return;
 
-    // Validate provider has API key
+    // Validate provider has API key (check local keys OR shared keys)
     const providerKeys = state.providerKeys[state.provider];
-    if (!providerKeys || !providerKeys.enabled) {
-        showToast(`${PROVIDERS[state.provider].name} is not enabled. Configure it in Settings.`, 'error');
-        return;
-    }
-    if (!providerKeys.apiKey) {
-        showToast(`No API key configured for ${PROVIDERS[state.provider].name}. Add one in Settings.`, 'error');
+    const sharedProviderKeys = state.sharedKeys[state.provider];
+    const hasLocalKey = providerKeys && providerKeys.enabled && providerKeys.apiKey;
+    const hasSharedKey = sharedProviderKeys && sharedProviderKeys.enabled && sharedProviderKeys.apiKey;
+
+    if (!hasLocalKey && !hasSharedKey) {
+        showToast(`No API key configured for ${PROVIDERS[state.provider].name}. Ask the admin to add one in Settings, or add your own.`, 'error');
         return;
     }
 
@@ -702,6 +795,46 @@ async function sendMessage() {
     els.messageInput.value = '';
     handleInputChange();
     scrollToBottom();
+
+    // ---- Intercept creator & identity questions ----
+    const msgLower = content.toLowerCase();
+
+    const creatorPhrases = [
+        'who created you', 'who made you', 'who built you',
+        'who developed you', 'who programmed you', 'who designed you',
+        'who coded you', 'who invented you', 'who owns you',
+        'who is your creator', 'who is behind you',
+        'did himanshu create you', 'who is your developer',
+        'who is your maker', 'who is your owner',
+    ];
+
+    const identityPhrases = [
+        'who are you', 'what are you', 'introduce yourself',
+        'tell me about yourself',
+    ];
+
+    const isCreatorQuestion = creatorPhrases.some(phrase => msgLower.includes(phrase));
+    const isIdentityQuestion = identityPhrases.some(phrase => msgLower.includes(phrase));
+
+    if (isCreatorQuestion || isIdentityQuestion) {
+        const customReply = isCreatorQuestion
+            ? 'Himanshu Yadav has created me.'
+            : 'I am Kairo AI, an intelligent assistant created by Himanshu Yadav.';
+
+        const customAssistantMsg = {
+            id: 'msg-' + (Date.now() + 1),
+            role: 'assistant',
+            content: customReply,
+            model: state.model,
+            timestamp: new Date().toISOString(),
+        };
+        state.messages.push(customAssistantMsg);
+        appendMessageToDOM(customAssistantMsg);
+        saveCurrentConversation();
+        updateTokenCount();
+        scrollToBottom();
+        return;
+    }
 
     // Start generation
     state.isGenerating = true;
@@ -726,7 +859,7 @@ async function sendMessage() {
 
     try {
         const provider = PROVIDERS[state.provider];
-        const keys = state.providerKeys[state.provider];
+        const keys = getEffectiveKeys(state.provider);
         let baseUrl = (keys.baseUrl || provider.baseUrl).replace(/\/$/, "");
         const authToken = keys.apiKey;
 
@@ -1124,6 +1257,11 @@ function loadSettings() {
     els.settingTokens.checked = state.settings.showTokens;
 
     // Load provider keys
+    const voidaiKeys = state.providerKeys.voidai || { enabled: true, baseUrl: 'https://api.voidai.app/v1', apiKey: '' };
+    $('#settingVoidAIBaseUrl').value = voidaiKeys.baseUrl || '';
+    $('#settingVoidAIKey').value = voidaiKeys.apiKey || '';
+    $('#settingVoidAIEnabled').checked = voidaiKeys.enabled;
+
     const orbitKeys = state.providerKeys.orbit;
     $('#settingOrbitBaseUrl').value = orbitKeys.baseUrl || '';
     $('#settingOrbitKey').value = orbitKeys.apiKey || '';
@@ -1180,6 +1318,13 @@ function saveSettings() {
     state.settings.stream = els.settingStream.checked;
     state.settings.showTokens = els.settingTokens.checked;
 
+    // VoidAI
+    state.providerKeys.voidai = {
+        baseUrl: $('#settingVoidAIBaseUrl').value.trim() || 'https://api.voidai.app/v1',
+        apiKey: $('#settingVoidAIKey').value.trim(),
+        enabled: $('#settingVoidAIEnabled').checked,
+    };
+
     // Orbit
     state.providerKeys.orbit = {
         baseUrl: $('#settingOrbitBaseUrl').value.trim() || 'https://api.orbit-provider.com/v1',
@@ -1227,15 +1372,23 @@ function saveSettings() {
     updateUI();
     closeSettings();
     showToast('Settings saved!', 'success');
+
+    // Save shared keys to server
+    saveSharedKeysToServer();
 }
 
 function resetSettings() {
     state.settings = {
-        systemPrompt: 'You are a helpful, knowledgeable, and friendly AI assistant. Provide clear, accurate, and well-structured responses. Use markdown formatting when helpful.',
+        systemPrompt: 'You are a helpful, knowledgeable, and friendly AI assistant called Kairo, created by Himanshu. When asked who created you, who made you, or who built you, always say that Himanshu created you, developed you, and built this platform. Provide clear, accurate, and well-structured responses. Use markdown formatting when helpful.',
         stream: true,
         showTokens: true,
     };
     state.providerKeys = {
+        voidai: {
+            baseUrl: 'https://api.voidai.app/v1',
+            apiKey: PROVIDERS.voidai.authToken,
+            enabled: true,
+        },
         orbit: {
             baseUrl: 'https://api.orbit-provider.com/v1',
             apiKey: PROVIDERS.orbit.authToken,
@@ -1353,4 +1506,90 @@ window.copyMessageContent = function (btn) {
 };
 
 // ---- Start ----
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+});
+
+
+
+// ---- Shared API Keys ----
+
+// Get effective keys for a provider (local first, then shared fallback)
+function getEffectiveKeys(providerKey) {
+    const local = state.providerKeys[providerKey];
+    const shared = state.sharedKeys[providerKey];
+
+    // If user has their own key configured and enabled, use that
+    if (local && local.enabled && local.apiKey && local.apiKey.trim()) {
+        return local;
+    }
+
+    // Fall back to shared keys from server
+    if (shared && shared.enabled && shared.apiKey && shared.apiKey.trim()) {
+        return {
+            baseUrl: shared.baseUrl || local?.baseUrl || PROVIDERS[providerKey]?.baseUrl || '',
+            apiKey: shared.apiKey,
+            enabled: true,
+        };
+    }
+
+    // Return local even if empty (will fail gracefully)
+    return local || { baseUrl: '', apiKey: '', enabled: false };
+}
+
+// Load shared keys from server on startup
+async function loadSharedKeysFromServer() {
+    try {
+        const response = await fetch('/api/shared-keys/full');
+        if (response.ok) {
+            const keys = await response.json();
+            state.sharedKeys = keys;
+            console.log('[SharedKeys] Loaded from server:', Object.keys(keys).filter(k => keys[k]?.apiKey).join(', ') || 'none');
+
+            // Auto-enable providers that have shared keys (even if user hasn't configured them)
+            for (const [provider, data] of Object.entries(keys)) {
+                if (data.apiKey && data.enabled && PROVIDERS[provider]) {
+                    // If user hasn't explicitly configured this provider, enable it via shared
+                    if (!state.providerKeys[provider]?.apiKey) {
+                        state.providerKeys[provider] = {
+                            ...state.providerKeys[provider],
+                            enabled: true,
+                        };
+                    }
+                }
+            }
+
+            // Re-render tabs to show newly available providers
+            renderProviderTabs();
+            updateUI();
+        }
+    } catch (err) {
+        console.log('[SharedKeys] Could not load from server (offline mode):', err.message);
+    }
+}
+
+// Save shared keys to server (admin action)
+async function saveSharedKeysToServer() {
+    try {
+        const response = await fetch('/api/shared-keys', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                password: '8492',
+                providerKeys: state.providerKeys,
+            }),
+        });
+
+        if (response.ok) {
+            console.log('[SharedKeys] Saved to server');
+            // Reload shared keys to sync state
+            await loadSharedKeysFromServer();
+            showToast('API keys shared globally!', 'success');
+        } else {
+            const err = await response.json();
+            console.warn('[SharedKeys] Save failed:', err.error);
+        }
+    } catch (err) {
+        console.warn('[SharedKeys] Could not save to server:', err.message);
+    }
+}
