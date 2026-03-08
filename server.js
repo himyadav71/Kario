@@ -6,6 +6,9 @@ const fs = require('fs');
 const app = express();
 const PORT = 3001;
 
+// Admin password from environment variable (set ADMIN_PASSWORD env var before running)
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'CHANGE_ME';
+
 const SHARED_KEYS_FILE = path.join(__dirname, 'shared-keys.json');
 
 app.use(cors());
@@ -65,7 +68,7 @@ app.post('/api/shared-keys', (req, res) => {
     const { providerKeys, password } = req.body;
 
     // Require the admin password
-    if (password !== '8492') {
+    if (password !== ADMIN_PASSWORD) {
         return res.status(403).json({ error: 'Invalid admin password' });
     }
 

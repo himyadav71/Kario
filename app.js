@@ -2,6 +2,9 @@
    Kairo Chat — Multi-Provider Application
    ============================================ */
 
+// ---- Admin Password (change this before deploying!) ----
+const ADMIN_PASSWORD = 'CHANGE_ME';
+
 // ---- Provider Configurations ----
 const PROVIDERS = {
     voidai: {
@@ -9,7 +12,7 @@ const PROVIDERS = {
         icon: '🔮',
         color: '#8b5cf6',
         baseUrl: 'https://api.voidai.app/v1',
-        authToken: 'sk-voidai-y7L7ncUV9FWHC-YixGOOV0Ary8iBu-TaKc68HNl-6ZoH-aa_bGi9zqTTi_ms0LVkfAJs_XB4WCLZ9zrx-1w72USI4DoJV0W6V30N8ITDDBd1yRwyo32iyHq06ICCesP-MCX4GQ',
+        authToken: '', // Set your VoidAI API key here or via shared keys
         useProxy: false,
         apiFormat: 'openai',
         defaultModel: 'gpt-4.1-mini',
@@ -53,7 +56,7 @@ const PROVIDERS = {
         icon: '🌐',
         color: '#7c3aed',
         baseUrl: 'https://api.orbit-provider.com/v1',
-        authToken: 'sk-orbit-4e5d2d5e6471455eaa5c88e3ec04dead',
+        authToken: '', // Set your Orbit API key here or via shared keys
         useProxy: true,
         apiFormat: 'openai',
         defaultModel: 'gemini-3-flash-preview',
@@ -1347,7 +1350,7 @@ function openSettings() {
 
 function validateSettingsPassword() {
     const password = els.settingsPasswordInput.value;
-    if (password === '8492') {
+    if (password === ADMIN_PASSWORD) {
         els.settingsLockScreen.classList.add('hidden');
         els.settingsContent.classList.remove('hidden');
         els.settingsModalFooter.classList.remove('hidden');
@@ -1632,7 +1635,7 @@ async function saveSharedKeysToServer() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                password: '8492',
+                password: ADMIN_PASSWORD,
                 providerKeys: state.providerKeys,
             }),
         });
